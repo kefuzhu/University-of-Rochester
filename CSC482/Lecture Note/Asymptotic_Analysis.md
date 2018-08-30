@@ -101,5 +101,3 @@ The optimal solution will be uses the most 7's
 (2) $0 \le X_1 \le 2$
 
 Therefore, $X_1 + 3X_2 \le 8$. But since we can use 7 whenever we are paying 8, so the $X_1 + 3X_2$ is actually $\le 6$
- 
-
