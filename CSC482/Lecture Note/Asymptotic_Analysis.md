@@ -1,5 +1,5 @@
 # Lecture 1 ☁️ 💨 Thursday, August $30^{th}$, 2018
-
+---
 ## Asymptotic notation
 
 $f(n) = O(g(n)) \Longleftrightarrow (\exists C)(\forall n) f(n) \le C \cdot g(n) $
@@ -40,7 +40,8 @@ Fixed coin denominations
 
 **OBJECTIVE**: minimize the number of coins used for the change
 
--
+---
+
 ### Scenario A: denominations are $1, 5 ,10, 20$
 
 **Solutions**:
