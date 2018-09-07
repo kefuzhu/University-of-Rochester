@@ -6,4 +6,4 @@ All files are generated using **MacDown** on Mac OS with proper rending configur
 
 ## This is what Knapsack_Problem_Lecture3.md should roughly look like
 
-![image](/Users/kefuzhu/Desktop/Github/University-of-Rochester/CSC482/Lecture Note/Knapsack_Problem_Lecture3.png)
+![Lecture 3 Image](https://raw.githubusercontent.com/datamasterkfz/University-of-Rochester/blob/master/CSC482/Lecture%20Note/Knapsack_Problem_Lecture3.png)
