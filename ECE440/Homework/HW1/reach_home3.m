@@ -11,10 +11,6 @@ experiments = 500;
 % List to capture result from each experiment
 home_prob = [];
 
-figure; grid on;
-
-% Set axis limit
-ylabel ('Probability of Reaching Home'); xlabel('p'); axis([0.3,0.7,0,1])
 for p = p_list
     % Number of times reach home
     broke_times = 0;
@@ -30,3 +26,5 @@ end
 
 % Show the plot
 plot(p_list,home_prob)
+% Set axis limit
+ylabel ('Probability of Reaching Home'); xlabel('p'); axis([0.3,0.7,0,1])
