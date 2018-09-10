@@ -7,7 +7,7 @@ b = 1;
 p_list = [0.25,0.5,0.75];   
 max_t=1000;
 
-figure; hold on; grid on; xlabel('bet index'); 
+figure; hold on; grid on;
 
 % Set axis limit
 ylabel ('w(t)'); xlabel('t'); axis([0,max_t,0,200])
