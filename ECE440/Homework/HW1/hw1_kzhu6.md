@@ -250,4 +250,4 @@ histogram(T0,'Normalization','probability')
 title('Distribution of T0 (w0 = 10, max_t = 1000)')
 ylabel('Frequency')
 xlabel('T0')
-```
+```xq
