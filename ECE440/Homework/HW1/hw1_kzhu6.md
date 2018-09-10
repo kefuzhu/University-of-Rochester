@@ -27,6 +27,11 @@ Under 2500 experiments, the probability of reaching home is 0.08
 **Answer**:
 I select 1000 times of experiments and I estimate the probability of reaching home to be 0.9. The reason I select N to be 1000 is after many times of experiments, I find the result becomes stable for N larger than 1000 as shown above. Therefore, I think the result converges roughly around 1000 times of experiments.
 
+## Question C
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW1/QuestionC.png)
+
+
 # Appendix
 
 ## Code for Question A
@@ -165,5 +170,43 @@ for w_0 = w0_list
 end
 % Show the plot
 plot(home_prob)
+```
 
+## Code for Question D
+
+**reach_home3.m**
+
+```matlab
+% Clean up workspace. 
+close all 
+clear     
+% Initialize parameters
+w_0= 10;   
+b = 1;      
+p_list = 0.3:0.02:0.7;   
+max_t=100;
+% Number of experiments for each p
+experiments = 500;
+% List to capture result from each experiment
+home_prob = [];
+
+figure; grid on;
+
+% Set axis limit
+ylabel ('Probability of Reaching Home'); xlabel('p'); axis([0.3,0.7,0,1])
+for p = p_list
+    % Number of times reach home
+    broke_times = 0;
+    % Show progress
+    fprintf('p = %.2f, ', p)
+    for experiment = 1:experiments
+        [w, t, broke] = casino(w_0, b, p, max_t);
+        broke_times = broke_times + broke;
+    end
+    home_prob(end+1) = broke_times/experiments;
+    fprintf('reach home prob = %.2f\n', broke_times/experiments)
+end
+
+% Show the plot
+plot(home_prob)
 ```
