@@ -9,11 +9,11 @@ max_t=1000;
 
 figure; hold on; grid on;
 
-% Set axis limit
+% Set axis label and limit
 ylabel ('w(t)'); xlabel('t'); axis([0,max_t,0,200])
 
 % Number of experiments for each p
-experiments = 10;  
+experiments = 10;
 for p = p_list
     if (p == 0.25)
         color = 'b';
