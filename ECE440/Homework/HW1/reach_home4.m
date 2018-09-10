@@ -2,7 +2,7 @@
 close all 
 clear     
 % Initialize parameters
-w_0 = 100;   
+w_0 = 10;   
 b = 1;      
 p = 0.4;   
 max_t=1000;
@@ -18,7 +18,7 @@ end
 
 % Show the plot
 histogram(T0,'Normalization','probability')
-title('Distribution of T0 (w0 = 50, max_t = 1000)')
+title('Distribution of T0 (w0 = 10, max_t = 1000)')
 ylabel('Frequency')
 xlabel('T0')
 
