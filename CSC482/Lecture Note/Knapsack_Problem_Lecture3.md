@@ -25,7 +25,7 @@ Assumptions: {\$10: 1lb, \$5: 3lb, \$7: 2lb, \$1: 5lb, \$6: 7lb}
 
 (1) Greedy approach: \$10 + \$7 = \$17, 1lb + 2lb = 3lb
 
-(2) Optimal apprach: Same as the greedy approach
+(2) Optimal approach: Same as the greedy approach
 
 **Example B**
 
@@ -36,7 +36,7 @@ Assumptions: {\$5: 1lb, \$6: 3lb, \$7: 2lb, \$1: 5lb, \$6: 7lb}
 
 (1) Greedy approach: \$5 + \$7 = \$12, 1lb + 2lb = 3lb
 
-(2) Optimal apprach: \$6 + \$7 = \$13, 3lb + 2lb = 5lb
+(2) Optimal approach: \$6 + \$7 = \$13, 3lb + 2lb = 5lb
 
 *Greedy approach is not optimal in this case!*
 
