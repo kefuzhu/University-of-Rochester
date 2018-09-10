@@ -29,4 +29,4 @@ for p = p_list
 end
 
 % Show the plot
-plot(home_prob)
+plot(p_list,home_prob)
