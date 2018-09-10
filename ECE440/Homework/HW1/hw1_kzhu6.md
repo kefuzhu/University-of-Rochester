@@ -35,7 +35,6 @@ I select 1000 times of experiments and I estimate the probability of reaching ho
 
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW1/QuestionD.png)
 
-
 # Appendix
 
 ## Code for Question A
