@@ -29,9 +29,13 @@ maxSum[3] = max(numList[1] + numList[2], # Do not use numList[3]
 # (3) Do not use element i-2
 
 # Pick the maximum value from these three cases and store it in maxSum[i]
-maxSum[i] = max(maxSum[i-1],
-                maxSum[i-2] + numList[i],
-                maxSum[i-3] + numList[i-1] + numList[i])
+for i from 4 to n:
+	maxSum[i] = max(maxSum[i-1],
+	                maxSum[i-2] + numList[i],
+	                maxSum[i-3] + numList[i-1] + numList[i])
+
+# The solution for numList
+maxSum[n]
 ```
 
 ---
