@@ -9,33 +9,34 @@ We are given n positive numbers $a_1, ..., a_n$. The goal is to select a subset 
 **Define**:
 
 - $numList$ = the input list that contains $n$ positive numbers
-- $maxSum[i]$ = the maximum sum of a subset of the first $i$ items (items $1,2,...i$), such that no three elements are consecutive
+- $T[i]$ = the maximum sum of a subset of the first $i$ items (items $1,2,...i$), such that no three elements are consecutive
 
 **Sudo code**:
 
 ```
 # Base case
-maxSum[1] = numList[1]
-maxSum[2] = numList[1] + numList[2]
-maxSum[3] = max(numList[1] + numList[2], # Do not use numList[3]
+T[1] = numList[1]
+T[2] = numList[1] + numList[2]
+T[3] = max(numList[1] + numList[2], # Do not use numList[3]
                 numList[1] + numList[3], # Do not use numList[2]
                 numList[2] + numList[3]) # Do not use numList[1]
 
 # Dynamic programming for the rest of elements
-# Given the optimal ansewr: maxSum[1], maxSum[2], ..., maxSum[i-1]
-# Three general cases for maxSum[i]:
+
+# Given the optimal ansewr: T[1], T[2], ..., T[i-1]
+# Three general cases for T[i]:
 # (1) Do not use element i
 # (2) Do not use element i-1
 # (3) Do not use element i-2
 
-# Pick the maximum value from these three cases and store it in maxSum[i]
+# Pick the maximum value from these three cases and store it in T[i]
 for i from 4 to n:
-	maxSum[i] = max(maxSum[i-1],
-	                maxSum[i-2] + numList[i],
-	                maxSum[i-3] + numList[i-1] + numList[i])
+	T[i] = max(T[i-1],
+	                T[i-2] + numList[i],
+	                T[i-3] + numList[i-1] + numList[i])
 
 # The solution for numList
-maxSum[n]
+T[n]
 ```
 
 ---
