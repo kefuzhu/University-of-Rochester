@@ -275,4 +275,4 @@ np.where(optimal_v2==5)[1]
 # Notice that the answer will only exist in the last row. Because you have all the items to choose only in last row
 ```
 
-**Output**: `array([7])`
+**Output**: `array([7])`t
