@@ -1,6 +1,6 @@
 % pmf
 x = [0 1];
-p = [1/2 1];
+p = [1/2 1/2];
 
 % Plot for pmf
 bar(x,p)

@@ -2,9 +2,9 @@
 
 ## Question 1
 
-![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Problem1_pmf.png)
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Question1_pmf.png)
 
-![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Problem1_cdf.png)
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Question1_cdf.png)
 
 # Appendix
 
@@ -14,7 +14,7 @@
 ```matlab
 % pmf
 x = [0 1];
-p = [1/2 1];
+p = [1/2 1/2];
 
 % Plot for pmf
 bar(x,p)
