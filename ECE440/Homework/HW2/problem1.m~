@@ -1,0 +1,13 @@
+% % pmf
+% x = [0 1];
+% p = [1/2 1];
+% 
+% % Plot for pmf
+% bar(x,p)
+% ylabel("Probability");xlabel("X");title("pmf plot of X");
+
+% cdf                     
+X = [-2,-1,0,1,2];
+F = [0,0,0.5,1,1];
+stairs(X, F)
+ylim([0,2]);ylab("Cumulative Probability");xlab("X");title("c");
