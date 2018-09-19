@@ -2,6 +2,13 @@
 
 ## Question 1
 
+$p(x) =
+\begin{cases}
+\frac{1}{2} - 0 = 0.5, \ x = 0 \\
+1 - \frac{1}{2} = 0.5, \ x = 1 \\
+\end{cases}
+$
+
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Question1_pmf.png)
 
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Question1_cdf.png)
@@ -50,6 +57,8 @@ n = 50, MSE = 0.000000
 To approximate normal distribution with binomial distribution with large value of $n$, with mean of $np$ and variance of $np(1-p)$
 
 The cdf of approximated normal distribution is $F(X) \approx \frac{1}{\sqrt{2\pi np(1-p)} } \int_{-\infty}^x e^{-\frac{(k-np)^2}{2np(1-p)}} \mathrm{d}k$
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW2/Question7d.png)
 
 ### (E)
 
