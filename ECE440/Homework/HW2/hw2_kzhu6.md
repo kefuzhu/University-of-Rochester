@@ -46,10 +46,10 @@ From the result, we only need to consider the MSE for $x = 2, 3, 4, 5, 6, 7, 8$
 Below is the calculated MSE for $n = 6, 10, 20, 50$
 
 ```
-n = 6, MSE = 0.018713
-n = 10, MSE = 0.004260
-n = 20, MSE = 0.000019
-n = 50, MSE = 0.000000
+n = 6, MSE = 0.017278
+n = 10, MSE = 0.001794
+n = 20, MSE = 0.000274
+n = 50, MSE = 0.000035
 ```
 
 ### (D)
@@ -148,7 +148,7 @@ nList = [6,10,20,50];
 
 for n = nList
     p = lambda/n;
-    MSE = sum(pdf('poiss',x,n,p).*(pdf('bino',x,n,p) - pdf('poiss',x,n,p)).^2);
+    MSE = sum((pdf('bino',x,n,p) - pdf('poiss',x,lambda)).^2.*pdf('poiss',x,lambda));
     fprintf('n = %d, MSE = %.6f\n', n, MSE);
 end
 ```

@@ -20,9 +20,9 @@ lambda = 5;
 x = 2:8;
 nList = [6,10,20,50];
 
-for n=nList
+for n = nList
     p = lambda/n;
-    MSE = sum(pdf('poiss',x,n,p).*(pdf('bino',x,n,p) - pdf('poiss',x,n,p)).^2);
+    MSE = sum((pdf('bino',x,n,p) - pdf('poiss',x,lambda)).^2.*pdf('poiss',x,lambda));
     fprintf('n = %d, MSE = %.6f\n', n, MSE);
 end
  
