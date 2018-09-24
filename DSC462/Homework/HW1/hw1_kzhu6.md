@@ -231,6 +231,36 @@ Since $\overline{E_1}, \overline{E_2}, ..., \overline{E_i}$ are mutually exclusi
 
 Proved in questions (b)(i), $\overline{E_i} \subset E_i, \forall i \ge 1$. Therefore, $P(\overline{E_i}) \le P(E_i), \forall i \ge 1 \Rightarrow \sum_{i = 1}^{\infty} P(\overline{E_i}) \le \sum_{i = 1}^{\infty} P(E_i)$
 
-In conclusion, $P (\cup_{i=1}^{\infty} E_i) = P(\cup_{i=1}^{\infty} \overline{E_i}) = \sum_{i = 1}^{\infty} P(\overline{E_i}) \le \sum_{i = 1}^{\infty} P(E_i)$
+In conclusion, $P(\cup_{i=1}^{\infty} E_i) = P(\cup_{i=1}^{\infty} \overline{E_i}) = \sum_{i = 1}^{\infty} P(\overline{E_i}) \le \sum_{i = 1}^{\infty} P(E_i)$
 
-Simplify as $P (\cup_{i=1}^{\infty} E_i) \le \sum_{i = 1}^{\infty} P(E_i)$
+Simplify as $P(\cup_{i=1}^{\infty} E_i) \le \sum_{i = 1}^{\infty} P(E_i)$
+
+### (d)
+
+(1)
+
+Based on the definition of $Q_i \rightarrow Q_i = P(\cap_{n=i}^\infty E_n^c)$
+
+$\because P(\cap_{n=i}^\infty E_n^c) = 1 - P(\cup_{n=i}^\infty E_n)$
+
+$\because P(\cup_{n=i}^{\infty} E_n) \le \sum_{n = i}^{\infty} P(E_n)$ (Boole's Inequality proved in part c)
+
+$\therefore Q_i = 1 - P(\cup_{n=i}^\infty E_n) \ge 1 - \sum_{n = i}^{\infty} P(E_n) \ge 1 - (\sum_{n = 1}^{\infty} P(E_n) - \sum_{n = 1}^{i} P(E_n))$
+
+$\because \sum_{n = 1}^{\infty} P(E_n) < \infty$
+
+$\therefore \lim_{i \rightarrow \infty} Q_i = 1$
+
+(2)
+
+If $P(E_i) \le \frac{c}{i^k}, c > 0, k > 1$, then
+
+$\sum_{i = 1}^{\infty} P(E_i) = c(1+ \frac{1}{2^k} + \frac{1}{3^k} + ....)$
+
+$ = c (1 + \int_1^\infty \frac{1}{x^k} \mathrm{d}x)$
+
+$ = c (1 + \frac{x^{-k+1}}{-k+1}) |_{i}^\infty$
+
+$ = c + \frac{c}{1-k} = c \cdot \frac{k}{k-1} < \infty$
+
+$\therefore \sum_{n = 1}^{\infty} P(E_n) < \infty \rightarrow \lim_{i \rightarrow \infty} Q_i = 1$ (Proved in part 1)
