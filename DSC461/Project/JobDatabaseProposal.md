@@ -15,7 +15,7 @@ The HR has already given the offer to a candidate for a specific position and th
 
 Better than excel spreadsheet
 
-- **Date integrity**: you can't store different types of data in the same attribute (Prevent unintentional wront data input on some level)
+- **Date integrity**: you can't store different types of data in the same attribute (Prevent unintentional incorrect data input on some level)
 - **Consistency**: Anyone with access permissions and can write changes will be able to make some changes that become visible for everyone else who have access permission. No need to copy and past excel or send someone a new excel through email
 - **Recovery**: Data in a database is more easier and stable in terms of recovery than data in an excel spreadsheet
 - balbalblablabla
@@ -37,6 +37,7 @@ Administrator
 - **OpenPosition**: JobID, OfficeID, Type, PostDate, Position, Department, Salary, Duration, VISASponsor
 - **JobAds**: JobID, AdsPlatform1, AdsPlatform2, AdsPlatform3
 - **Recruiter**: FirstName, LastName, Position, Department, JobID
+- **ApplicationReceived** JobID, NumberOfApplication, Resource
 
 # Web-interface
 
