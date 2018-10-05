@@ -1,0 +1,26 @@
+---
+title: "hw2_kzhu6"
+output: html_document
+---
+
+##Question 4
+```{r}
+# Calculate the P(Z >= (625-500)/75)
+1 - pnorm(625, mean = 500, sd = 75)
+```
+
+
+```{r}
+p = 0.04779035
+1 - choose(35,0)*(1-p)^35 - choose(35,1)*p*(1-p)^34 - choose(35,2)*(p^2)*(1-p)^33
+```
+
+```{r}
+f = function(x) {choose(35,0)*(1-x)^35 + choose(35,1)*x*(1-x)^34 + choose(35,2)*(x^2)*(1-x)^33 - 0.2}
+uniroot(f,c(0,1))
+```
+
+```{r}
+qnorm(0.1183283, 0, 1, lower.tail = FALSE)
+```
+
