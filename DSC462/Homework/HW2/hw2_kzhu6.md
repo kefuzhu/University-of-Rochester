@@ -107,16 +107,17 @@ segments(-6,0,0,0)
 segments(4,1,6,1)
 ```
 
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/DSC462/Homework/HW2/questions1.png)
 
 ## Question 3
 
 $var(S_N) = \sum_{i=1}^n \sigma_i^2 + 2\sum_{i<y} \sigma_{ij}$
 
-$\because \sigma_i^2 = E[(X_i - E[X_i])^2] = (0-\frac{1}{N})(1-\frac{1}{N}) + (1-\frac{1}{N})\frac{1}{N} = 0$
+$\because \sigma_i^2 = E[X_i^2] - E[X_i]^2 = \frac{1}{N} - (\frac{1}{N})^2 = \frac{1}{N} \cdot (1-\frac{1}{N})$
 
-$\because \sigma_{ij} = E[X_iX_j] - E[X_i]E[X_j] = 1 \cdot \frac{1}{N}\frac{1}{N} - \frac{1}{N}\frac{1}{N} = 0$
+$\because \sigma_{ij} = E[X_iX_j] - E[X_i]E[X_j] = 1 \cdot \frac{1}{N}\frac{1}{N-1} - \frac{1}{N}\frac{1}{N} = \frac{1}{N^2(N-1)}$
 
-$\therefore var(S_N) = 0$
+$\therefore var(S_N) = \sum_{i=1}^n \frac{1}{N} \cdot (1-\frac{1}{N}) + 2\sum_{i,j=1,\ i<y}^n \frac{1}{N^2(N-1)} = 1 + 2 \cdot (\frac{N(N-1)}{2}) \cdot \frac{1}{N^2(N-1)} = 1$
 
 ## Question 4
 
