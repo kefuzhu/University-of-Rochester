@@ -8,9 +8,9 @@ function []=prob_1_versus_K(J,L)
         accepted_rank = zeros(1,N);
         % Record the accepted rank value, the return time N is useless here
         for i=1:N
-            [accepte_rank(i),tmp] = accept_Offer(J,K,L);
+            [accept_rank(i),tmp] = accept_Offer(J,K,L);
         end
-        [freq, bin] = hist(accepte_rank,J);
+        [freq, bin] = hist(accept_rank,J);
         pmf_vector = freq/N;
         prob_of_rank_1(1,kIndex) = pmf_vector(1,1);
         kIndex = kIndex + 1;
