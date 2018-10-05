@@ -2,8 +2,24 @@
 title: "hw2_kzhu6"
 output: html_document
 ---
+## Question 2
+```{r}
+# F(x) for x in (0,2)
+f1 = function(x) {x/2 - x^2/8}
+# F(x) for x in (2,4)
+f2 = function(x) {1 + x^2/8 - x/2}
+# Plot F(x) in (0,2)
+plot(f1, from = 0, to = 2, xlim = c(-6,6), ylim = c(0,1), xlab = 'X', ylab = 'F(X)')
+# Plot F(x) in (2,4)
+plot(f2, from = 2, to = 4, add = TRUE)
+# Add F(x) = 0 from -infinity to 0
+segments(-6,0,0,0)
+# Add F(x) = 1 from 4 to +infinity
+segments(4,1,6,1)
+```
 
-##Question 4
+
+## Question 4
 ```{r}
 # Calculate the P(Z >= (625-500)/75)
 1 - pnorm(625, mean = 500, sd = 75)

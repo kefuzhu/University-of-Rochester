@@ -86,16 +86,27 @@ $
 $\therefore F(x) = 
 \begin{cases}
 0,\ x \in (-\infty,0]\\
-\int_0^2 -\frac{1}{4}x + \frac{1}{2} \mathrm{d}x,\ x \in (0,2)\\
-\int_2^4 \frac{1}{4}x - \frac{1}{2} \mathrm{d}x,\ x \in [2,4)\\
+\int_0^x -\frac{1}{4}x + \frac{1}{2} \mathrm{d}x = \frac{x}{2} - \frac{x^2}{8},\ x \in (0,2)\\
+(\int_0^2 -\frac{1}{4}x + \frac{1}{2} \mathrm{d}x) + (\int_2^x \frac{1}{4}x - \frac{1}{2} \mathrm{d}x) = 1 + \frac{x^2}{8} - \frac{x}{2},\ x \in [2,4)\\
 1,\ x \in [4,+\infty)\\
 \end{cases}
 $
 
-- $\int_0^2 -\frac{1}{4}x + \frac{1}{2} \mathrm{d}x = -\frac{1}{8}x^2 + \frac{1}{2}x\ |_0^2 = 0.5$
-- $\int_2^4 \frac{1}{4}x - \frac{1}{2} \mathrm{d}x = \frac{1}{8}x^2 -\frac{1}{2}x\ |_2^4 = 0.5$
+```r
+# F(x) for x in (0,2)
+f1 = function(x) {x/2 - x^2/8}
+# F(x) for x in (2,4)
+f2 = function(x) {1 + x^2/8 - x/2}
+# Plot F(x) in (0,2)
+plot(f1, from = 0, to = 2, xlim = c(-6,6), ylim = c(0,1), xlab = 'X', ylab = 'F(X)')
+# Plot F(x) in (2,4)
+plot(f2, from = 2, to = 4, add = TRUE)
+# Add F(x) = 0 from -infinity to 0
+segments(-6,0,0,0)
+# Add F(x) = 1 from 4 to +infinity
+segments(4,1,6,1)
+```
 
-![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/DSC462/Homework/HW2/questions1.png)
 
 ## Question 3
 
