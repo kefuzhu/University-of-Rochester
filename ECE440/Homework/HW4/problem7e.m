@@ -46,16 +46,22 @@ for n=2:max_t
     end
 end
 
-% Problem D
-figure
+% Problem E
+figure()
+plot(1:max_t, X)
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=0,$ $X_{0}=400,$ $n=50$','Interpreter','latex')
+
+figure()
 stairs(1:max_t, [number_of_types;number_of_extinct_types]')
 xlabel('Generation')
 ylabel('Number of Women of Each Type')
 title('$q=0,$ $X_{0}=400,$ $n=50$','Interpreter','latex')
-axis([0,50,0,number_of_types(end)])
+axis([0,50,0,number_of_types(end)+50])
 legend('Number of Types','Number of Extinct Types','Location','Best')
 
-figure
+figure()
 bar(1:number_of_types(end), X(1:number_of_types(end),max_t),'r')
 xlabel('Types')
 ylabel('Number of Women of Each Type')

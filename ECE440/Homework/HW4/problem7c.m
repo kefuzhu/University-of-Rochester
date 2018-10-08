@@ -47,7 +47,13 @@ for n=2:max_t
 end
 
 % Problem D
-figure
+figure()
+plot(1:max_t, X)
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
+
+figure()
 stairs(1:max_t, [number_of_types;number_of_extinct_types]')
 xlabel('Generation')
 ylabel('Number of Women of Each Type')
@@ -55,35 +61,8 @@ title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
 axis([0,50,0,number_of_types(end)])
 legend('Number of Types','Number of Extinct Types','Location','Best')
 
-figure
+figure()
 bar(1:number_of_types(end), X(1:number_of_types(end),max_t),'r')
 xlabel('Types')
 ylabel('Number of Women of Each Type')
 title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','latex')
-
-
-% figure
-% plot(1:max_t, X)
-% xlabel('Generation')
-% ylabel('Number of Women of Each Type')
-% title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
-% 
-% figure
-% stairs(1:max_t, X')
-% xlabel('Generation')
-% ylabel('Number of Women of Each Type')
-% title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
-% 
-% figure
-% stairs(1:max_t, [number_of_types;number_of_extinct_types]')
-% xlabel('Generation')
-% ylabel('Number of Women of Each Type')
-% title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
-% axis([0,50,0,number_of_types(end)])
-% legend('Number of Types','Number of Extinct Types','Location','Best')
-% 
-% figure
-% bar(1:number_of_types(end), X(1:number_of_types(end),max_t),'r')
-% xlabel('Types')
-% ylabel('Number of Women of Each Type')
-% title('Histogram of the Final Number of Women of Each Type')

@@ -149,3 +149,51 @@ number_of_types
 # The total number of extinct types by generation n
 number_of_extinct
 ```
+
+### (D)
+
+```matlab
+figure()
+stairs(1:max_t, [number_of_types;number_of_extinct_types]')
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
+axis([0,50,0,number_of_types(end)])
+legend('Number of Types','Number of Extinct Types','Location','Best')
+
+figure()
+bar(1:number_of_types(end), X(1:number_of_types(end),max_t),'r')
+xlabel('Types')
+ylabel('Number of Women of Each Type')
+title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','latex')
+```
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_d_1.png)
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_d_2.png)
+
+### (E)
+
+```matlab
+% Problem E
+figure()
+stairs(1:max_t, [number_of_types;number_of_extinct_types]')
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=0,$ $X_{0}=400,$ $n=50$','Interpreter','latex')
+axis([0,50,0,number_of_types(end)])
+legend('Number of Types','Number of Extinct Types','Location','Best')
+
+figure()
+bar(1:number_of_types(end), X(1:number_of_types(end),max_t),'r')
+xlabel('Types')
+ylabel('Number of Women of Each Type')
+title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','latex')
+```
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_e_1.png)
+
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_e_2.png)
+
+### (F)
+
