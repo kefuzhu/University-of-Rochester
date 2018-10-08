@@ -154,6 +154,12 @@ number_of_extinct
 
 ```matlab
 figure()
+plot(1:max_t, X)
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=10^{-2},$ $X_{0}=100,$ $n=50$','Interpreter','latex')
+
+figure()
 stairs(1:max_t, [number_of_types;number_of_extinct_types]')
 xlabel('Generation')
 ylabel('Number of Women of Each Type')
@@ -168,6 +174,8 @@ ylabel('Number of Women of Each Type')
 title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','latex')
 ```
 
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_d_0.png)
+
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_d_1.png)
 
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_d_2.png)
@@ -177,11 +185,17 @@ title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','lat
 ```matlab
 % Problem E
 figure()
+plot(1:max_t, X)
+xlabel('Generation')
+ylabel('Number of Women of Each Type')
+title('$q=0,$ $X_{0}=400,$ $n=50$','Interpreter','latex')
+
+figure()
 stairs(1:max_t, [number_of_types;number_of_extinct_types]')
 xlabel('Generation')
 ylabel('Number of Women of Each Type')
 title('$q=0,$ $X_{0}=400,$ $n=50$','Interpreter','latex')
-axis([0,50,0,number_of_types(end)])
+axis([0,50,0,number_of_types(end)+50])
 legend('Number of Types','Number of Extinct Types','Location','Best')
 
 figure()
@@ -191,9 +205,54 @@ ylabel('Number of Women of Each Type')
 title('Histogram of the Number of Women of Each Type, $n=50$','Interpreter','latex')
 ```
 
+![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_e_0.png)
+
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_e_1.png)
 
 ![Simulation Plot](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW4/Question7_e_2.png)
 
 ### (F)
 
+$\because E(\sum_{i=1}^{X_{n-1}} D_i | X_{n-1} = k) = E(\sum_{i=1}^{k} D_i | X_{n-1} = k) = E(\sum_{i=1}^k D_i)$
+
+As defined in the question, $E(D_i) = v$
+
+$\therefore E(\sum_{i=1}^{X_{n-1}} D_i | X_{n-1} = k) = kv$
+
+By iterated expectations
+
+$E(X_n) = \sum_{k=0}^{\infty} E(X_n|X_{n-1} = k)P(X_{n-1} = k) = \sum_{k=0}^{\infty} kv \cdot P(X_{n-1} = k) = v \cdot E(X_{n-1})$
+
+By iterations, $E(X_n) = v \cdot E(X_{n-1}) =  v^2 \cdot E(X_{n-2}) = ... = v^n \cdot E(X_0) = v^n \cdot X_0$
+
+For $v > 1$ ($v = \lambda$ in the part D and E), we expect to see an exponential increase in the expected value, which is similar to what we see in the simulation graph
+
+Consider $X_0 = X_{r0}$, we then have $E(X_{rn}) = v_r^n \cdot E(X_{r0}) = v_r^n = (1-q)^nv^n$
+
+### (G)
+
+Based on Markov's inequality, $P(|X \ge a| \le \frac{E(X)}{a})$, we have $P(|X_{rn} \ge a| \le \frac{v_r^n}{a})$ for some value of $a$
+
+If $v_r < 1$, then $lim_{n \rightarrow \infty} P(X_{rn} \ge a) \le lim_{n \rightarrow \infty} \frac{v_r^n}{a} = 0$
+
+$\Rightarrow lim_{n \rightarrow \infty} P(X_{rn} < a) = 1 \Leftrightarrow lim_{n \rightarrow \infty} P(X_{rn} = 0) = 1$
+
+### (H)
+
+$\because
+P_e(j) =
+\begin{cases}
+1,\ v < 1\ (Proved\ in\ part\ G) \\
+< 1,\ v > 1\ (Type\ r\ could\ extinct)\\
+\end{cases}
+$
+
+$\therefore$ By law of total probability, consider conditioning on $X_{r1} = j$ 
+
+$P(X_{r\infty} = 0|X_{r1} = j, X_{r0} = 1) = P(X_{r\infty} = 0|X_{r1} = j) = P(X_{r\infty} = 0|X_{r0} = 1)^j = (P_e(1))^j$
+
+$\because P(X_{r\infty} = 0|X_{r1} = j) = (P_e(1))^j$
+
+$\therefore$ Again, by law of total probability, $P_e(1) = \sum_{j=1}^{\infty} P(X_{r\infty} = 0|X_{r1} = j, X_{r0} = 1) P(X_{r1} = j|X_{r0} = 1) = \sum_{j=1}^{\infty} p_j \cdot (P_e(1))^j$
+
+If in general, the starting generation have $j$ individuals ($X_{r0}=j$), then by independence, we have $P_e(j) = (P_e(1))^j$
