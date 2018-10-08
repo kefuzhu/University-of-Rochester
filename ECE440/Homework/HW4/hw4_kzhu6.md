@@ -240,9 +240,9 @@ $\Rightarrow lim_{n \rightarrow \infty} P(X_{rn} < a) = 1 \Leftrightarrow lim_{n
 ### (H)
 
 $\because
-P_e(j) =
+P_e(j) 
 \begin{cases}
-1,\ v < 1\ (Proved\ in\ part\ G) \\
+= 1,\ v < 1\ (Proved\ in\ part\ G) \\
 < 1,\ v > 1\ (Type\ r\ could\ extinct)\\
 \end{cases}
 $
