@@ -39,20 +39,40 @@
 
 ### 4. Transitive FDs 
 
+**Definition**: A FD $X \rightarrow Y$ is a transitive FD, if there exists a set of attributes $Z$ 
+
+- That is neither a candidate key nor a subset of any key
+- Both $X \rightarrow Z$ and $Z \rightarrow Y$ hold
+
+![transitive_FD](https://github.com/datamasterkfz/University-of-Rochester/raw/master/DSC461/Midterm/transitive_FD.png)
+
 ### 5. Trivial/Non FDs
 
 ### 6. 1NF, 2NF, 3NF, BCNF
 
-**Defition**: The normal form of a relation refers to the highest normal form condition that it meets, and hence indicates the degree to which it hs been normalized
+**Definition**: The normal form of a relation refers to the highest normal form condition that it meets, and hence indicates the degree to which it hs been normalized
 
 (1) **First Normal Form (1NF)**
 
 (2) **Second Normal Form (2NF)**
 
-A relation schema $R$ is in second normal form if every non-prime attribute $A$ in $R$ is fully functionally dependent on the primary key
+**Definition**: A relation schema $R$ is in second normal form if every non-prime attribute $A$ in $R$ is fully functionally dependent on the primary key
 
+![2NF](https://github.com/datamasterkfz/University-of-Rochester/raw/master/DSC461/Midterm/2NF.png)
 
+- **Ename** can be functionally determined by only **Ssn**
+- **Pname** and **Plocation** can be functionally determined by only **Pnumber**
 
 (3) **Third Normal Form**
+
+**Definition**: If there is $X \rightarrow A$, for some $A$ that are non-prime attribute, $X$ must be a superkey
+
+![3NF](https://github.com/datamasterkfz/University-of-Rochester/raw/master/DSC461/Midterm/3NF.png)
+
+- **Dmgr_ssn** depend on **Dnumber**, which is neither a key itself nor a subset of the key of relation **EMP_DEPT**
+
+(4) **Boyece-Codd Normal Form (BCNF)**
+
+**Definition**: If there is $X \rightarrow A$, no matter $A$ is prime or non-prime attribute, $X$ must be a superkey
 
 ### 7. Properties of Decomposition.
