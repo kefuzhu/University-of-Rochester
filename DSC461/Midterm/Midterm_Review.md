@@ -4,7 +4,7 @@
 
 (1) **Database**: a collection of related data
 
-(2) **Data**: known facts taht can be recorded and have implicit meaning
+(2) **Data**: known facts that can be recorded and have implicit meaning
 
 (3) **Database Management System (DBMS)**: a computerized system that enables users to create and maintain a database
 
@@ -23,7 +23,7 @@
 (6) **Data Model Operations**: Used for specifying database **retrievals** and **updates** by referring to the constructs of the data model
 
 - Basic model operations: generic insert, delete, update, ...
-- User-defined operations: compute_student_gpa, update_inventory, ...
+- User-defined operations: compute\_student\_gpa, update\_inventory, ...
 
 (7) **Data Model Categories**
 
@@ -98,7 +98,13 @@
 
 ### 3. Constraints
 
-#### A. Inherent model-based/Implicit
+#### A. Inherent model-based/Implicit: 
+
+Characteristics of relations
+
+- No order among tuples in a relation
+- Values within a tuple is ordered
+- Tuple only contain atomic values and NULLs
 
 #### B. Schema-based/Explicit
 
@@ -195,4 +201,4 @@ either **X is a superkey**, or **A is a prime attribute**
 (2) **Nonadditive (Lossless) Join**: Ensures that no spurious tuples are generated when a NATURAL JOIN operation is applied to hte relations resulting from the decomposition
 
 
-**Side note**: Have each individual relation in the decomposition be in BCNF or 3NF
+**Side note**: Goal is to have each individual relation in the decomposition be in BCNF or 3NF
