@@ -99,7 +99,7 @@ I expect to check domain constraints, application based constraints, key constra
 
 Below are some examples for domain constratins and application based constraints:
 
-1. All departure time should be before its corresponding arrival time (e.g. FLIGHT\_LGE.Scheduled\_departure\_time < FLIGHT\_LEG.Scheduled\_arrival\_time)
+1. All departure time should be before its corresponding arrival time (e.g. FLIGHT\_LGE.Scheduled\_departure\_time < mFLIGHT\_LEG.Scheduled\_arrival\_time)
 2. If we are using this AIRLINE database for entering all data before any actual arrangements, then all new data records should not have DATE values that are in the past (e.g. FLIGHT\_LEG.Scheduled\_departure\_time < CURDATE() **or** GETDATE() **or** NOW())
 3. The result of converting the Scheduled\_departure\_time in a flight's first FLIGHT_LEG should be the same as the value of Weekdays in the FLIGHT relation (e.g. WEEKDAY(FLIGHT\_LEG.Scheduled\_departure\_time WHERE FLIGHT\_LEG.Leg\_number = 1) = FLIGHT.Weekdays)
 4. The SEAT\_RESERVATION.Customer\_phone should be in valid format
