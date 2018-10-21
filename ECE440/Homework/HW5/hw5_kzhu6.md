@@ -47,7 +47,7 @@ ylabel('packets in queues 1..4')
 legend('queue 1','queue 2','queue 3','queue 4','Location','Best')
 ```
 
-![Question7_g]()
+![Question7_g](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW5/Question7_g.png)
 
 ### (H)
 
@@ -78,7 +78,7 @@ xlabel('Number of Packets in Queue')
 ylabel('Calculated Probability')
 ```
 
-![Question7_h]()
+![Question7_h](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW5/Question7_h.png)
 
 From the simulation plot, we can see that the dominant system approach substantially underestimates the performance of the RA policy. For example, the probability of a queue being empty under the dominant system approach is 0.1, but the probability without this approach is close to 0.35. 
 
