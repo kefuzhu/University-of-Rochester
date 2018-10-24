@@ -36,11 +36,11 @@ end
 
 For $A_0 = 1$, experiment with different number of students ($N$)
 
-![Question7b_1](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7b_1.png)
+![Question4b_1](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4b_1.png)
 
 Add an extra node (professor) which is connected to all other nodes to make the MC independent on the initial state. The ranks result are shown below
 
-![Question7b_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7b_2.png)
+![Question4b_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4b_2.png)
 
 ### (D)
 
@@ -52,9 +52,9 @@ The reason that the limit can be calculated as such for any initial state is tha
 
 Below is the computation of ranks
 
-![Question7d_1](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7d_1.png)
+![Question4d_1](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4d_1.png)
 
-![Question7d_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7d_2.png)
+![Question4d_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4d_2.png)
 
 
 ### (E)
@@ -67,11 +67,11 @@ Because of ergodicity, $\pi$ is the unique solution of a system of linear equati
 
 ${I - P^T \choose 1^T}\pi = {0 \choose 1}$, where $I$ is the $J \times J$ identity matrix and $0$ is the $(J+1) \times 1$ array
 
-![Question7e](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7e.png)
+![Question4e](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4e.png)
 
 ### (F)
 
-![Question7f](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7f.png)
+![Question4f](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question4f.png)
 
 ### (G)
 
@@ -165,7 +165,7 @@ for j=1:3
 end
 ```
 
-**problem7b_2.m**
+**problem4b_2.m**
 
 ```matlab
 clc;close all;clear all;
@@ -238,7 +238,7 @@ for j=1:3
     title('N=10^' + string(j+4) + ' Computation time is ' + string(t) + ' sec')
 end
 ```
-**problem7d_1.m**
+**problem4d_1.m**
 
 ```matlab
 clc;close all;clear all;
@@ -309,7 +309,7 @@ for j=1:3
 end
 ```
 
-**problem7d_2.m**
+**problem4d_2.m**
 
 ```matlab
 clc;close all;clear all;
@@ -384,7 +384,7 @@ for j=1:3
 end
 ```
 
-**problem7e.m**
+**problem4e.m**
 
 ```matlab
 clc;close all;clear all;
