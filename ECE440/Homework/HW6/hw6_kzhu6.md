@@ -52,7 +52,9 @@ The reason that the limit can be calculated as such for any initial state is tha
 
 Below is the computation of ranks
 
-![Question7d](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7d.png)
+![Question7d_1](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7d_1.png)
+
+![Question7d_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW6/Question7d_2.png)
 
 
 ### (E)

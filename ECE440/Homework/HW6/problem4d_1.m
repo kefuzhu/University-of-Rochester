@@ -51,12 +51,8 @@ for k=1:min(size(graph))
     end
 end
 
-% Add professor
 J=min(size(graph));
-graph=[graph ones(J,1);ones(1,J) 0];
-
-J=min(size(graph));
-init_dist(1:J) = 1/J;
+init_dist = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 figure
 for j=1:3
