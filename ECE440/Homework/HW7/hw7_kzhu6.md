@@ -122,3 +122,13 @@ legend('Estimated','Calculated','Location','Best')
 <center>
 ![Question7_c_2](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW7/Question7_c_2.png)
 </center>
+
+### (d)
+
+We have $S_1 > t$ if and only if there are no arrivals by time $t \Longleftrightarrow P(S_1 > t) = P(N(t)= 0)$. As shown in part B, $N(t)$ ~ $Poisson(\lambda t)$, which has pdf of this form
+
+<center>
+$P(N(t) = k) = e^{-\lambda t} \frac{(\lambda t)^k}{k!}$
+</center>
+
+Plug in $k = 0$, we then have $P(S_1 > t) = P(N(t)= 0) = e^{-\lambda t}$, which is the basically saying the first arrival time follows $Exp(\lambda)$
