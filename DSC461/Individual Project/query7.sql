@@ -1,0 +1,3 @@
+SELECT CAST(COUNT(DISTINCT A.userID,B.userID)/2 AS UNSIGNED)
+FROM Bid AS A, Bid AS B
+WHERE A.itemID = B.itemid AND A.userID != B.userID;

@@ -1,0 +1,1 @@
+SELECT COUNT(DISTINCT Item.userID) FROM Item JOIN Bid ON Item.userID = Bid.userID;
