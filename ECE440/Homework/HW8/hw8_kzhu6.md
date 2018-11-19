@@ -176,4 +176,134 @@ axis([0 5 0 310])
 stairs(t,X);
 ```
 
-![Question7_e]()
+![Question7_e](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW8/Question7_e.png)
+
+### (F)
+
+$\because \frac{\mathrm{d} P_{xy}(t)}{\mathrm{d} t} = P^{'}(xy) = \sum_{k = 0, k \ne y}^{\infty} q_{ky}P_{xk}(t) - v_y P_{xy}(t)$
+
+$\therefore$ 
+
+**Range A**
+
+$P^{'}(xy) = \alpha \sum_{k=1}^c P_{x,k} - \lambda P_{x,y}$
+
+**Range B**
+
+$P^{'}(xy) = \lambda P_{x,y-1} + \alpha P_{x,y+c} - (\lambda + \alpha) P_{x,y}$
+
+**Range C**
+
+- $y < x_r - d: P^{'}(xy) = \lambda P_{x,y-1} + \alpha P_{x,y+c} - (\lambda + \alpha) P_{x,y}$
+- $y \ge x_r - d: P^{'}(xy) = \lambda P_{x,y-1} + \alpha P_{x,y+c} + \beta P_{x,y+d} - (\lambda + \alpha) P_{x,y}$
+
+**Range D**
+
+- $y \le min(X_{max} - c, X_{max} - d): P^{'}(xy) = \lambda P_{x,y-1} + \alpha P_{x,y+c} + \beta P_{x,y+d} - (\lambda + \alpha + \beta) P_{x,y}$
+- $y > min(X_{max} - c, X_{max} - d): P^{'}(xy) = \lambda P_{x,y-1} - (\lambda + \alpha + \beta) P_{x,y}$
+- $c < d,\ min(X_{max} - d < y \le X_{max} - c: P^{'}(xy) = \lambda P_{x,y-1} + \alpha P_{x,y+c} - (\lambda + \alpha + \beta) P_{x,y}$
+- $d < c,\ min(X_{max} - c < y \le X_{max} - d: P^{'}(xy) = \lambda P_{x,y-1} + \beta P_{x,y+d} - (\lambda + \alpha + \beta) P_{x,y}$
+
+**Range E**
+
+$P^{'}(xy) = \lambda P_{x,y-1} - (\alpha + \beta) P_{x,y}$
+
+### (G)
+
+$\because \frac{\mathrm{d} P_{xy}(t)}{\mathrm{d} t} = P^{'}(xy) = \sum_{k = 0, k \ne x}^{\infty} q_{xk}P_{ky}(t) - v_x P_{xy}(t)$
+
+$\therefore$
+
+**Range A**
+
+$P^{'}(xy) = \lambda P_{x+1,y} - P_{x,y}$
+
+**Range B**
+
+$P^{'}(xy) = \lambda P_{x+1,y} + \alpha P_{0,y} - (\lambda + \alpha) P_{x,y}$
+
+**Range C**
+
+$P^{'}(xy) = \lambda P_{x+1,y} + \alpha P_{x-c,y} - (\lambda + \alpha) P_{x,y}$
+
+**Range D**
+
+$P^{'}(xy) = \lambda P_{x+1,y} + \alpha P_{x-c,y} + \beta P_{x-d,y} - (\lambda + \alpha + \beta) P_{x,y}$
+
+**Range E**
+
+$P^{'}(xy) = \alpha P_{x-c,y} + \beta P_{x-d,y} - (\alpha + \beta) P_{x,y}$
+
+### (H)
+
+**Kolmogrov_F**
+
+```matlab
+function [R]=Kolmogrov_F(lambda,alpha,beta,c,d,X_r,X_max)
+    % initialization
+    R=zeros(X_max+1); 
+    % Range A:
+    R(1,1)=-lambda;
+    R(1,2:c+1)=alpha;
+    % Range B:
+    for i=2:c
+        R(i,i-1)=lambda;
+        R(i,i+c)=alpha;
+        R(i,i)=-(lambda+alpha);
+    end
+    % Range C-1:
+    for i=c+1:X_r-d
+        R(i,i-1)=lambda;
+        R(i,i+c)=alpha;
+        R(i,i)=-(lambda+alpha);
+    end
+    % Range C_2:
+    for i=X_r-d+1:X_r
+        R(i,i-1)=lambda;
+        R(i,i+c)=alpha;
+        R(i,i+d)=beta;
+        R(i,i)=-(lambda+alpha);
+    end
+    % Range D_1:
+    for i=X_r+1:X_max-d+1
+        R(i,i-1)=lambda;
+        R(i,i+c)=alpha;
+        R(i,i+d)=beta;
+        R(i,i)=-(lambda+alpha+beta);
+    end
+    % Range D_2:
+    for i=X_max-d+2:X_max-c+1
+        R(i,i-1)=lambda;
+        R(i,i+c)=alpha;
+        R(i,i)=-(lambda+alpha+beta);
+    end
+    % Range D_3:
+    for i=X_max-c+2:X_max
+        R(i,i-1)=lambda;
+        R(i,i)=-(lambda+alpha+beta);
+    end
+    % Range E:
+    R(X_max+1, X_max)=lambda;
+    R(X_max+1, X_max+1)=-(alpha+beta);
+```
+
+**Plot**
+
+```matlab
+R=Kolmogrov_F(lambda,alpha,beta,c,d,X_r,X_max);
+p0=zeros(X_max+1,1);
+p0(X_0+1,1)=1;
+T=0:0.25:5;
+figure
+hold on
+xlabel('X')
+ylabel('pmf')
+title('pmf of the states between 0 and 5 over quarterly intervals')
+axis([0 300 0 0.016])
+for t=T
+     pmf=expm(R.*t)*p0;
+     plot(0:X_max,pmf)
+end
+```
+
+![Question7_h]()
