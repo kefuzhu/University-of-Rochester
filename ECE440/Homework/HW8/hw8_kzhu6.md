@@ -306,4 +306,37 @@ for t=T
 end
 ```
 
-![Question7_h]()
+![Question7_h](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW8/Question7_h.png)
+
+### (I)
+
+Because dividends can only be paid when $x$ is in range (D) or (E), we can declare that 
+
+$P$(at least one dividend paid) $= 1 – P$(no dividends paid) $\approx 0.64$ 
+
+Then the probability of paying dividends in a given quarter can be estimated as 0.64 times the probability that $X(t) \ge X_r$. We repeat this procedure for every quarter and plot the result below
+
+```matlab
+R=Kolmogrov_F(lambda,alpha,beta,c,d,X_r,X_max);
+p0=zeros(X_max+1,1);
+p0(X_0+1,1)=1;
+T=0.25:0.25:5;
+prob=zeros(20,1);
+figure
+hold on
+xlabel('time (years)')
+ylabel('Prob. of dividend')
+axis([0 5 0.2 0.30])
+for t=T
+        pmf=expm(R.*t)*p0;
+        prob(t/0.25) = sum(pmf(201:end))*0.64;
+end
+set(gca);
+stairs(T,prob);
+grid on
+```
+
+![Question7_h](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW8/Question7_i.png)
+
+As shown on the plot, the probability of paying dividends will decrease as time increase. And eventually this probability tend to converge around 0.21.
+
