@@ -336,7 +336,7 @@ stairs(T,prob);
 grid on
 ```
 
-![Question7_h](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW8/Question7_i.png)
+![Question7_i](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW8/Question7_i.png)
 
 As shown on the plot, the probability of paying dividends will decrease as time increase. And eventually this probability tend to converge around 0.21.
 
