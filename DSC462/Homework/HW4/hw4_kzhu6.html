@@ -175,25 +175,25 @@ $(document).ready(function () {
 <pre class="r"><code>normal_sample = rnorm(1000)
 empirical_rule(normal_sample)</code></pre>
 <pre><code>##             Sample Proportion (%) Theoretical Proportion (%)
-## within 1 SD                  69.8                       68.0
-## within 2 SD                  95.2                       95.0
-## within 3 SD                  99.8                       99.7</code></pre>
+## within 1 SD                  70.1                       68.0
+## within 2 SD                  95.0                       95.0
+## within 3 SD                  99.5                       99.7</code></pre>
 </div>
 <div id="exponential-distribution" class="section level4">
 <h4>Exponential Distribution</h4>
 <pre class="r"><code>exp_sample = rexp(1000)
 empirical_rule(exp_sample)</code></pre>
 <pre><code>##             Sample Proportion (%) Theoretical Proportion (%)
-## within 1 SD                  87.0                       68.0
-## within 2 SD                  94.7                       95.0
-## within 3 SD                  98.0                       99.7</code></pre>
+## within 1 SD                  89.0                       68.0
+## within 2 SD                  95.8                       95.0
+## within 3 SD                  98.4                       99.7</code></pre>
 </div>
 <div id="uniform-distribution" class="section level4">
 <h4>Uniform Distribution</h4>
 <pre class="r"><code>uniform_sample = runif(1000)
 empirical_rule(uniform_sample)</code></pre>
 <pre><code>##             Sample Proportion (%) Theoretical Proportion (%)
-## within 1 SD                  57.8                       68.0
+## within 1 SD                  57.9                       68.0
 ## within 2 SD                 100.0                       95.0
 ## within 3 SD                 100.0                       99.7</code></pre>
 </div>
@@ -388,9 +388,9 @@ t.test(Cars93[Cars93$Passengers == 4,'MPG.city'],
 <div id="a-3" class="section level2">
 <h2>(a)</h2>
 <center>
-<p><span class="math inline">\(H_o: n_4 \cdot \mu_4 = n_5 \cdot \mu_5\)</span></p>
-<p><span class="math inline">\(H_a: n_4 \cdot \mu_4 \ne n_5 \cdot \mu_5\)</span></p>
-<span class="math inline">\(T = \frac{n_4 \cdot \bar{X_4} - n_5 \cdot \bar{X_5}}{\sqrt{n_4 \cdot S^2_4 + n_5 \cdot S^2_5}}\)</span>
+<p><span class="math inline">\(H_o: 4 \cdot \mu_4 = 5 \cdot \mu_5\)</span></p>
+<p><span class="math inline">\(H_a: 4 \cdot \mu_4 \ne 5 \cdot \mu_5\)</span></p>
+<span class="math inline">\(T = \frac{n_4 \cdot \bar{X_4} - n_5 \cdot \bar{X_5}}{\sqrt{\frac{16 \cdot S^2_4}{n_4} + \frac{25 \cdot S^2_5}{n_5}}}\)</span>
 </center>
 </div>
 <div id="b-3" class="section level2">

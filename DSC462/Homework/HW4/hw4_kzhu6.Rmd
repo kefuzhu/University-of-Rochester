@@ -271,11 +271,11 @@ t.test(Cars93[Cars93$Passengers == 4,'MPG.city'],
 
 ## (a)
 <center>
-$H_o: n_4 \cdot \mu_4 = n_5 \cdot \mu_5$
+$H_o: 4 \cdot \mu_4 = 5 \cdot \mu_5$
 
-$H_a: n_4 \cdot \mu_4 \ne n_5 \cdot \mu_5$
+$H_a: 4 \cdot \mu_4 \ne 5 \cdot \mu_5$
 
-$T = \frac{n_4 \cdot \bar{X_4} - n_5 \cdot \bar{X_5}}{\sqrt{n_4 \cdot S^2_4 + n_5 \cdot S^2_5}}$
+$T = \frac{n_4 \cdot \bar{X_4} - n_5 \cdot \bar{X_5}}{\sqrt{\frac{16 \cdot S^2_4}{n_4} + \frac{25 \cdot S^2_5}{n_5}}}$
 </center>
 
 ## (b)
