@@ -97,4 +97,4 @@ xlabel('time');title('Weiner Process Simulated, h = ' + string(h));
 grid on; axis([0 t_MAX -5 5])
 ```
 
-![]()
+![Question7_d](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW9/Question7_d.png)
