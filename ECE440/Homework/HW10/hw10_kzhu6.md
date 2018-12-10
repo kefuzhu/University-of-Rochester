@@ -104,6 +104,8 @@ axis([-0.1,0.1,0,1])
 
 ![cdf](https://github.com/datamasterkfz/University-of-Rochester/raw/master/ECE440/Homework/HW10/Question2c_cdf.png)
 
+**Answer**: The geometric Brownian motion seems to model the evolution of CSCO stock price
+
 ### (D) Expected return
 
 Expected return = $E[\frac{e^{-\alpha t}X(t)}{X(0)}\ |\ X(0)] = e^{t\ (\widehat{\mu} - \alpha + \frac{\widehat{\sigma}^2}{2})}$
@@ -117,10 +119,46 @@ $\because Y(1)$ ~ $N(\widehat{\mu},\widehat{\sigma}^2)\ \therefore P[Y(1) \ge 0.
 
 ### (E) Risk neutral measure
 
+The risk neutral measure is a Brownian motion with $\mu = \alpha - \frac{\widehat{\alpha}^2}{2} \approx -0.07$ and $\sigma^2 = \widehat{\alpha}^2 \approx 0.22$
+
 ### (F) Expected return for risk neutral measure
+
+The expected discounted rate of return for an investment in CSCO is $0$. 
+
+And the non-discounted rate of return is $\alpha$
 
 ### (G) Derive the Black-Scholes formula
 
+By determining the price $c$, the Black-Scholes formula yields zero expected return with respect to the risk neutral measure so that there is no potential arbitrage/
+
+The closed form expression is 
+
+$c = X(0) \cdot \phi(\frac{log(K/X(0)) - \mu t}{\sqrt{\sigma^2t}} - \sqrt{\sigma^2t}) - e^{-\alpha t} \cdot K \cdot \phi(\frac{log(K/X(0)) - \mu t}{\sqrt{\sigma^2t}})$
+
 ### (H) Determine option price
 
+```matlab
+% Load CSCO data and set parameters
+cisco_stock_price
+Z=log(close_price);
+Y=Z(2:end)-Z(1:end-1);
+N=length(Y);
+h=1/365;
+mu_hat=sum(Y)/(N*h);
+sigma_sqr_hat=sum((Y-mu_hat*h).^2)/((N-1)*h);
+alpha=0.0375;
+
+X_0=close_price(1,1);
+EX=X_0*exp(mu_hat+sigma_sqr_hat/2);
+K=[0.8,1,1.2]*EX;
+a=(log(K/X_0)-(alpha-sigma_sqr_hat/2))/(sqrt(sigma_sqr_hat));
+b=a-sqrt(sigma_sqr_hat);
+Q_a=1-normcdf(a,0,1);
+Q_b=1-normcdf(b,0,1);
+c=X_0*Q_b-exp(-alpha)*K.*Q_a
+```
+
+By the calculation from code above, the price for $K = E[X(t)]$ is 0.2941, the price for $K = 1.2E[X(t)]$ is 0.1243, and the price for $K = 0.8E[X(t)]$ is 0.7190.
+
+For $K = 0.8E[X(t)]$, since it has the least risk because it is more likely to see $K < X(t)$ and obtain a gain, it has the most expensive option price.
  
