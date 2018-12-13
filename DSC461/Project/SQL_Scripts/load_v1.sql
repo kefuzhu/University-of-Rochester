@@ -36,8 +36,7 @@ DELETE FROM APPLICANT;
 LOAD DATA LOCAL INFILE "/home/kzhu6/group_proj/data/Applicant.csv"
 INTO TABLE APPLICANT
 FIELDS TERMINATED BY ","
-LINES TERMINATED BY "\r\n" (Email, FirstName, LastName, School, Degree, Major);
-UPDATE APPLICANT SET Applicant_ID = CONCAT('A',10000+ID);
+LINES TERMINATED BY "\r\n";
 
 # Empty the APPLY_TO relation
 DELETE FROM APPLY_TO;

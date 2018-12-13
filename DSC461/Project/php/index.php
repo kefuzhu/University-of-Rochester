@@ -56,26 +56,13 @@ section:after {
 </style>
 </head>
 
-
 <?php
   echo "<body>";
 // Content of header
 echo '<header>
-  <h2>Job Application Database</h2>
-  <p> -- By Fastest HK Journalist (#11)</p>
-  <table style="width:80%;" align="center">
-    <tr>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/office.php">Offices</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/department.php">Departments</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/recruiter.php">Recruiters</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/position.php">Positions</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/applicant.php">Applicants</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/apply_to.php">Applications</a></th>
-    <th><a href="http://betaweb.csug.rochester.edu/~zxu17/adsplatform.php">AdsPlatforms</a></th>
-    </tr>
-  </table>
+  <h1>Careers at Fastest HK Journalist</h1>
+  <p><b>Open Positions</b></p>
 </header>';
-
 
 // Content of control panel
 echo "<section>
@@ -86,15 +73,18 @@ echo "<section>
       <meta http-equiv='Content-Script-Type' content='text/javascript'>
       <script type='text/JavaScript'>
       function valid_1(f) {
-      !(/^[A-z0-9 \,\.\-\#\&]*$/i).test(f.value)?f.value = f.value.replace(/[^A-z0-9 \,\.\-\#\&]/ig,''):null;
-      } 
-      function valid_2(f) {
-      !(/^[0-9]*$/i).test(f.value)?f.value = f.value.replace(/[^0-9]/ig,''):null;
+      !(/^[A-z0-9 \,\.\-\#\&\@]*$/i).test(f.value)?f.value = f.value.replace(/[^A-z0-9 \,\.\-\#\&\@]/ig,''):null;
       } 
       </script>
-      <form action='office.php' method='post'>
-      ID: <input type='number' name='ID' min='1'><br>
-      StreetAddress: <input type='text' name='StreetAddress' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+      <form action='index.php' method='post'>
+      JobID: <input type='number' name='ID' min='10000001' max='99999999'><br>
+      Title: <input type='text' name='Title' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+      Type: <select name='Type'>
+        <option value=''>Please Select..</option>
+        <option value='FullTime'>Full-time</option>
+        <option value='PartTime'>Part-time</option>
+      </select><br>
+      Department: <input type='text' name='Name' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
       City: <input type='text' name='City' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
       State: <select name='State'>
         <option value=''>Please Select..</option>
@@ -150,9 +140,6 @@ echo "<section>
         <option value='WI'>Wisconsin</option>
         <option value='WY'>Wyoming</option>
       </select><br>
-      ZipCode: <input type='text' name='ZipCode' onkeyup='valid_2(this)' onblur='valid_2(this)' maxlength='5' minlength='5'><br>
-      <input type='submit' name='action' value='Insert'>
-      <input type='submit' name='action' value='Delete'>
       <input type='submit' name='action' value='Search'>
       <input type='submit' name='action' value='Reset'>";
 
@@ -177,46 +164,18 @@ echo "<section>
     }
     else print "<br>Connection OK!</br>";
 
-    // Insert
-    if ($_POST[action] == 'Insert' && $_POST[ID]) {
-      $sql_insert = "INSERT INTO OFFICE
-          VALUES ('$_POST[ID]', '$_POST[StreetAddress]', 
-          '$_POST[City]', '$_POST[State]', '$_POST[ZipCode]')";
-      echo "<br><b>Equivalent SQL query:</b><br>$sql_insert<br>";
-
-      if ($conn->query($sql_insert) === TRUE && $conn->affected_rows == 1) {
-          echo "<br><b>Values added</b>";
-      } else {
-          echo "<br><b>Error adding values: </b>" . $conn->error;
-      }
-    } elseif ($_POST[action] == 'Insert') {
-      echo "<br><b>Error adding values: </b>" . "The ID field is empty!";
-    }
-
-    // Delete
-    if ($_POST[action] == 'Delete') {
-      $att_del = array();
-      foreach ($_POST as $param_name => $param_val) {
-        if ($param_val) {
-          $att_del[] = "$param_name = '$param_val'";
-        }
-      }
-      array_pop($att_del);
-
-      if ($att_del) {
-        $sql_delete = "DELETE FROM OFFICE
-                WHERE ". implode(" AND ", $att_del);
-        echo "<br><b>Equivalent SQL query:</b><br>$sql_delete<br>";
-
-        if ($conn->query($sql_delete) === TRUE && $conn->affected_rows >= 1) {
-              echo "<br><b>Values deleted</b>";
-          } else {
-              echo "<br><b>Error deleting values: </b>" . $conn->error;
-          }
-      } else {
-        echo "<br><b>Error deleting values: </b>" . "All the fields are empty!";
-      }
-    }
+    echo "<br><b>Please fillout the form below to apply: </b><br><br>";
+    echo "<form action='index.php' method='post'>
+        JobID:<input type='text' name='JobID' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        FirstName: <input type='text' name='FirstName' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        LastName: <input type='text' name='LastName' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        Email: <input type='text' name='Email' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        School: <input type='text' name='School' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        Degree: <input type='text' name='Degree' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        Major: <input type='text' name='Major' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        Source (Where did you find this position): <input type='text' name='Platform' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+        <input type='submit' name='action' value='submit'>
+        </form>";
 
     // Search
     if ($_POST[action] == 'Search') {
@@ -228,8 +187,11 @@ echo "<section>
       }
       array_pop($att_sel);
 
-      $sql_select = "SELECT * FROM OFFICE
-              WHERE ". implode(" AND ", $att_sel);
+      $sql_select = "SELECT P.ID, P.Title, P.Type, D.Name, O.City, O.State
+                    FROM POSITION_ AS P
+                    LEFT JOIN DEPARTMENT AS D ON P.DepartmentID=D.ID
+                    LEFT JOIN OFFICE AS O ON D.OfficeID=O.ID
+                    WHERE ". implode(" AND ", $att_sel);
 
       if ($att_sel) {
         echo "<br><b>Equivalent SQL query:</b><br>$sql_select<br>";
@@ -262,11 +224,12 @@ echo "<section>
         echo "<div style='overflow-x:auto;'>
         <table border='1'>
         <tr>
-        <th>ID</th>
-        <th>StreetAddress</th>
+        <th>JobID</th>
+        <th>Title</th>
+        <th>Type</th>
+        <th>Department</th>
         <th>City</th>
         <th>State</th>
-        <th>ZipCode</th>
         </tr>";
 
         // Fill in data
@@ -274,10 +237,11 @@ echo "<section>
         {
         echo "<tr>";
         echo "<td>" . $row['ID'] . "</td>";
-        echo "<td>" . $row['StreetAddress'] . "</td>";
+        echo "<td>" . $row['Title'] . "</td>";
+        echo "<td>" . $row['Type'] . "</td>";
+        echo "<td>" . $row['Name'] . "</td>";
         echo "<td>" . $row['City'] . "</td>";
         echo "<td>" . $row['State'] . "</td>";
-        echo "<td>" . $row['ZipCode'] . "</td>";
         echo "<tr>";
         }
         echo "</table>";
@@ -288,6 +252,49 @@ echo "<section>
 
     }
 
+// Insert
+if ($_POST[action] == 'submit' && $_POST[JobID]) {
+
+  if(!(ereg("@",$_POST[Email]))){
+    echo "<br><b>Please enter valid email address</b>";
+  } elseif($_POST[JobID] == ''|$_POST[FirstName] == ''|$_POST[LastName] == ''|$_POST[Email] == ''|
+           $_POST[School] == ''|$_POST[Degree] == ''|$_POST[Major] == ''|$_POST[Platform] == ''){
+    echo "<br><b>Please do not leave any box empty</b>";
+  }
+  else{
+    // Insert values for APPLICANT relation
+    $sql_insert = "INSERT INTO APPLICANT (Email,FirstName,LastName,School,Degree,Major)
+        VALUES ('$_POST[Email]', '$_POST[FirstName]', 
+        '$_POST[LastName]', '$_POST[School]', '$_POST[Degree]', '$_POST[Major]')";
+
+    if ($conn->query($sql_insert) === TRUE && $conn->affected_rows == 1) {
+      
+        $sql_update = "UPDATE APPLICANT SET Applicant_ID = CONCAT('A',10000+ID)";
+        $conn->query($sql_update);
+
+       // Insert values for APPLY_TO relation 
+      $sql_insert = "INSERT INTO APPLY_TO
+                    VALUES ((SELECT Applicant_ID FROM APPLICANT ORDER BY ID DESC LIMIT 1),
+                    '$_POST[JobID]','$_POST[Platform]')";
+      if ($conn->query($sql_insert) === TRUE && $conn->affected_rows == 1) {
+        echo "<br><b>Thanks! We've received your application. Have a nice day!</b>";
+      } else{
+        echo "<br><b>Sorry, we did not receive your application. Please make sure you entered a correct JobID and submit a new one. If the problem persists, please contact us: zxu17@ur.rochester.edu</b><br><br>";
+        echo "<b>Error message: </b>" . $conn->error;
+        $sql = "DELETE FROM APPLICANT ORDER BY ID DESC LIMIT 1";
+        $conn->query($sql);
+      }
+    } else {        
+      echo "<br><b>Sorry, we did not receive your application. Please submit a new one or contact us: zxu17@ur.rochester.edu</b><br><br>" . $conn->error;
+        echo "<b>Error message: </b>" . $conn->error;
+        $sql = "DELETE FROM APPLICANT ORDER BY ID DESC LIMIT 1";
+      $conn->query($sql);
+    }
+  }
+} elseif ($_POST[action] == 'submit') {
+      echo "<br><b>Please enter a correct JobID and fill out as many fields as you can. If you have any question, please contact us: zxu17@ur.rochester.edu</b>";
+}
+
     // Normally display the table
     if ($_POST[action] == 'Search' && $att_sel) {
       
@@ -297,10 +304,13 @@ echo "<section>
   			</nav>
   			<article>";
       // SQL statement for creating a table
-      $sql_select = "SELECT * FROM OFFICE";
+      $sql_select = "SELECT P.ID, P.Title, P.Type, D.Name, O.City, O.State
+                    FROM POSITION_ AS P
+                    LEFT JOIN DEPARTMENT AS D ON P.DepartmentID=D.ID
+                    LEFT JOIN OFFICE AS O ON D.OfficeID=O.ID";
 
       echo "See values below:";
-      if ($result = $conn->query("SELECT * FROM OFFICE")) {
+      if ($result = $conn->query($SQL_select)) {
           printf("Select returned %d rows.\n", $result->num_rows);
       }
 
@@ -324,11 +334,12 @@ echo "<section>
       echo "<div style='overflow-x:auto;'>
       <table border='1'>
       <tr>
-      <th>ID</th>
-      <th>StreetAddress</th>
+      <th>JobID</th>
+      <th>Title</th>
+      <th>Type</th>
+      <th>Department</th>
       <th>City</th>
       <th>State</th>
-      <th>ZipCode</th>
       </tr>";
 
       // Fill in data
@@ -336,10 +347,11 @@ echo "<section>
       {
       echo "<tr>";
       echo "<td>" . $row['ID'] . "</td>";
-      echo "<td>" . $row['StreetAddress'] . "</td>";
+      echo "<td>" . $row['Title'] . "</td>";
+      echo "<td>" . $row['Type'] . "</td>";
+      echo "<td>" . $row['Name'] . "</td>";
       echo "<td>" . $row['City'] . "</td>";
       echo "<td>" . $row['State'] . "</td>";
-      echo "<td>" . $row['ZipCode'] . "</td>";
       echo "<tr>";
       }
       echo "</table>";

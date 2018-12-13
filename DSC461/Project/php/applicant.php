@@ -89,18 +89,20 @@ echo "<section>
       !(/^[A-z0-9 \,\.\-\#\&]*$/i).test(f.value)?f.value = f.value.replace(/[^A-z0-9 \,\.\-\#\&]/ig,''):null;
       } 
       function valid_2(f) {
-      !(/^[0-9]*$/i).test(f.value)?f.value = f.value.replace(/[^0-9]/ig,''):null;
-      }
-      function valid_3(f) {
-      !(/^(E\d{5}){1}$/).test(f.value)?f.value = f.value.replace(/[^(E{1}\d{5})$]/g,''):null;
-      }
+      !(/^[A-z0-9 \@\.\_\-]*$/i).test(f.value)?f.value = f.value.replace(/[^A-z0-9 \@\.\_\-]/ig,''):null;
+      } 
+      function valid_4(f) {
+      !(/^(A\d{5}){1}$/).test(f.value)?f.value = f.value.replace(/[^(A{1}\d{5})$]/g,''):null;
+      } 
       </script>
-      <form action='recruiter.php' method='post'>
-      ID: <input type='text' name='ID' onkeyup='valid_3(this)' onblur='valid_3(this)'><br>
+      <form action='applicant.php' method='post'>
+      ID (Do not use for Insert): <input type='text' name='Applicant_ID' onkeyup='valid_4(this)' onblur='valid_4(this)'><br>
+      Email: <input type='text' name='Email' onkeyup='valid_2(this)' onblur='valid_2(this)'><br>
       FirstName: <input type='text' name='FirstName' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
       LastName: <input type='text' name='LastName' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
-      Position: <input type='text' name='Position' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
-      DepartmentID: <input type='number' name='DepartmentID' min='101' max='999'><br>
+      School: <input type='text' name='School' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+      Degree: <input type='text' name='Degree' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
+      Major: <input type='text' name='Major' onkeyup='valid_1(this)' onblur='valid_1(this)'><br>
       <input type='submit' name='action' value='Insert'>
       <input type='submit' name='action' value='Delete'>
       <input type='submit' name='action' value='Search'>
@@ -128,24 +130,22 @@ echo "<section>
     else print "<br>Connection OK!</br>";
 
     // Insert
-    if ($_POST[action] == 'Insert' && $_POST[ID]) {
-      if(!(ereg("^E[0-9]{5}$",$_POST[ID]))){
-        echo "<br><b>Error adding values: </b>Must Enter Correct ID Format!";
-      } else{
-        $sql_insert = "INSERT INTO RECRUITER
-            VALUES ('$_POST[ID]', '$_POST[FirstName]', 
-            '$_POST[LastName]', '$_POST[Position]', '$_POST[DepartmentID]')";
-        echo "<br><b>Equivalent SQL query:</b><br>$sql_insert<br>";
+        if ($_POST[action] == 'Insert') {
+          if(!(ereg("@",$_POST[Email]))){
+        echo "<br><b>Error adding values: </b>Must Enter a correct email!";
+      } else {$sql_insert = "INSERT INTO APPLICANT (Email,FirstName,LastName,School,Degree,Major)
+        VALUES ('$_POST[Email]', '$_POST[FirstName]', 
+        '$_POST[LastName]', '$_POST[School]', '$_POST[Degree]', '$_POST[Major]')";
+        $sql_update = "UPDATE APPLICANT SET Applicant_ID = CONCAT('A',10000+ID)";
+            echo "<br><b>Equivalent SQL query:</b><br>$sql_insert<br>";
 
-        if ($conn->query($sql_insert) === TRUE && $conn->affected_rows == 1) {
-            echo "<br><b>Values added</b>";
-        } else {
-            echo "<br><b>Error adding values: </b>" . $conn->error;
-        }
-      }      
-    } elseif ($_POST[action] == 'Insert') {
-      echo "<br><b>Error adding values: </b>" . "The ID field is empty!";
-    }
+            if ($conn->query($sql_insert) === TRUE && $conn->query($sql_update) === TRUE && $conn->affected_rows == 1) {
+                echo "<br><b>Values added</b>";
+            } else {
+                echo "<br><b>Error adding values: </b>" . $conn->error;
+            }
+          }
+        }     
 
     // Delete
     if ($_POST[action] == 'Delete') {
@@ -158,7 +158,7 @@ echo "<section>
       array_pop($att_del);
 
       if ($att_del) {
-        $sql_delete = "DELETE FROM RECRUITER
+        $sql_delete = "DELETE FROM APPLICANT
                 WHERE ". implode(" AND ", $att_del);
         echo "<br><b>Equivalent SQL query:</b><br>$sql_delete<br>";
 
@@ -182,7 +182,7 @@ echo "<section>
       }
       array_pop($att_sel);
 
-      $sql_select = "SELECT * FROM RECRUITER
+      $sql_select = "SELECT * FROM APPLICANT
               WHERE ". implode(" AND ", $att_sel);
 
       if ($att_sel) {
@@ -217,21 +217,25 @@ echo "<section>
         <table border='1'>
         <tr>
         <th>ID</th>
+        <th>Email</th>
         <th>FirstName</th>
         <th>LastName</th>
-        <th>Position</th>
-        <th>DepartmentID</th>
+        <th>School</th>
+        <th>Degree</th>
+        <th>Major</th>
         </tr>";
 
         // Fill in data
         while($row = $result->fetch_assoc())
         {
         echo "<tr>";
-        echo "<td>" . $row['ID'] . "</td>";
+        echo "<td>" . $row['Applicant_ID'] . "</td>";
+        echo "<td>" . $row['Email'] . "</td>";
         echo "<td>" . $row['FirstName'] . "</td>";
         echo "<td>" . $row['LastName'] . "</td>";
-        echo "<td>" . $row['Position'] . "</td>";
-        echo "<td>" . $row['DepartmentID'] . "</td>";
+        echo "<td>" . $row['School'] . "</td>";
+        echo "<td>" . $row['Degree'] . "</td>";
+        echo "<td>" . $row['Major'] . "</td>";
         echo "<tr>";
         }
         echo "</table>";
@@ -251,10 +255,10 @@ echo "<section>
   			</nav>
   			<article>";
       // SQL statement for creating a table
-      $sql_select = "SELECT * FROM RECRUITER";
+      $sql_select = "SELECT * FROM APPLICANT";
 
       echo "See values below:";
-      if ($result = $conn->query("SELECT * FROM RECRUITER")) {
+      if ($result = $conn->query("SELECT * FROM APPLICANT")) {
           printf("Select returned %d rows.\n", $result->num_rows);
       }
 
@@ -279,21 +283,25 @@ echo "<section>
       <table border='1'>
       <tr>
       <th>ID</th>
+      <th>Email</th>
       <th>FirstName</th>
       <th>LastName</th>
-      <th>Position</th>
-      <th>DepartmentID</th>
+      <th>School</th>
+      <th>Degree</th>
+      <th>Major</th>
       </tr>";
 
       // Fill in data
       while($row = $result->fetch_assoc())
       {
       echo "<tr>";
-      echo "<td>" . $row['ID'] . "</td>";
+      echo "<td>" . $row['Applicant_ID'] . "</td>";
+      echo "<td>" . $row['Email'] . "</td>";
       echo "<td>" . $row['FirstName'] . "</td>";
       echo "<td>" . $row['LastName'] . "</td>";
-      echo "<td>" . $row['Position'] . "</td>";
-      echo "<td>" . $row['DepartmentID'] . "</td>";
+      echo "<td>" . $row['School'] . "</td>";
+      echo "<td>" . $row['Degree'] . "</td>";
+      echo "<td>" . $row['Major'] . "</td>";
       echo "<tr>";
       }
       echo "</table>";
