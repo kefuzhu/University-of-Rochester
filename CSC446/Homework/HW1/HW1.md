@@ -83,13 +83,17 @@ $\Rightarrow \sigma^2 = \frac{1}{N} \sum_{n=1}^N (x_n - \mu)^2$
 
 ### (A) (X ${\perp\!\!\!\perp}$ W | Z,Y) $\wedge$ (X ${\perp\!\!\!\perp}$ Y | Z) $\Rightarrow$ (X ${\perp\!\!\!\perp}$ Y,W | Z)
 
-We have $P(X,Y,W\ |\ Z) = P(X\ |\ Y,W,Z) \cdot P(Y,W\ |\ Z)$
+Since we have $P(X,Y,W\ |\ Z) = P(X\ |\ Y,W,Z) \cdot P(Y,W\ |\ Z)$
 
 $\because X {\perp\!\!\!\perp} W\ |\ Z,Y$
+
+$\therefore P(X\ |\ Y,W,Z) \rightarrow P(X\ |\ Y,Z)$
 
 $\therefore P(X,Y,W\ |\ Z) = P(X\ |\ Y,Z) \cdot P(Y,W\ |\ Z)$
 
 $\because X {\perp\!\!\!\perp} Y\ |\ Z$
+
+$\therefore P(X\ |\ Y,Z) \rightarrow P(X\ |\ Z)$
 
 $\therefore P(X,Y,W\ |\ Z) = P(X\ |\ Z) \cdot P(Y,W\ |\ Z)$
 
@@ -97,12 +101,16 @@ Hence, we proved $X {\perp\!\!\!\perp} Y,W\ |\ Z$
 
 ### (B) (X ${\perp\!\!\!\perp}$ Y | Z) $\wedge$ (X ${\perp\!\!\!\perp}$ Y | W) $\Rightarrow$ (X ${\perp\!\!\!\perp}$ Y | Z,W)
 
-We have $P(X,Y\ |\ Z,W) = P(X\ |\ Y,Z,W) \cdot P(Y\ |\ Z,W)$
+Since we have $P(X,Y\ |\ Z,W) = P(X\ |\ Y,Z,W) \cdot P(Y\ |\ Z,W)$
 
-$\because X {\perp\!\!\!\perp} Y\ |\ Z\ \mathrm{and}\ X {\perp\!\!\!\perp} Y\ |\ W$
+$\because X {\perp\!\!\!\perp} Y\ |\ Z$
 
-$\therefore X {\perp\!\!\!\perp} Y\ |\ Z,W$
+$\therefore P(X\ |\ Y,Z,W) = P(X\ |\ Z,W)$
+
 
 $\therefore P(X,Y\ |\ Z,W) = P(X\ |\ Z,W) \cdot P(Y\ |\ Z,W)$
 
 Hence, we proved $X {\perp\!\!\!\perp} Y\ |\ Z,W$
+
+
+$\frac{P(X,Y|Z,W)}{P(Y|Z,W)} = P(X|Y,Z,W)$
