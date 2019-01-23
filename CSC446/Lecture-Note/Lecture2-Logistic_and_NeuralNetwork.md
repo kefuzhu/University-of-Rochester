@@ -17,7 +17,7 @@ Disadvantages of perceptron algorithm
 <center>
 $\sigma(u) = \frac{e^u}{1+e^u}$
 
-![](graphs/sigmoid.png)
+![](https://github.com/kefuzhu/University-of-Rochester/raw/master/CSC446/Lecture-Note/graphs/sigmoid.png)
 </center>
 
 $P_w(y=1|x)=\sigma(w^Tx) = \frac{e^{w^Tx}}{1+e^{w^Tx}}$
@@ -131,16 +131,16 @@ The common value for $\alpha_t$ is $\frac{\alpha}{t}$
 	
 		$\sigma(x) = \frac{e^x}{1+e^x}$ 
 		
-		![](graphs/sigmoid.png)
+		![](https://github.com/kefuzhu/University-of-Rochester/raw/master/CSC446/Lecture-Note/graphs/sigmoid.png)
 	 
 	- **Hyperbolic Tangent Function, $g = tanh$**
 
 		$tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}}$
 		
-		![](graphs/tanh.png)
+		![](https://github.com/kefuzhu/University-of-Rochester/raw/master/CSC446/Lecture-Note/graphs/tanh.png)
 	
 	- **Rectified Linear Units, $g = relu$** 
 
 		$relu(x) = \max\{0,x\}$
 		
-		<img src="graphs/relu.png" style="max-width:50%; width: 50%">
+		<img src="https://github.com/kefuzhu/University-of-Rochester/raw/master/CSC446/Lecture-Note/graphs/relu.png" style="max-width:50%; width: 50%">
