@@ -10,9 +10,9 @@ $P(Apple) = P(Apple|red) \cdot P(red) + P(Apple|blue) \cdot P(blue) + P(Apple|gr
 
 $= \frac{3}{10} \cdot 0.2 + \frac{1}{2} \cdot 0.2 + \frac{3}{10} \cdot 0.6$
 
-$= 0.6 \cdot 0.2 + 0.5 \cdot 0.2 + 0.6 \cdot 0.6$
+$= 0.3 \cdot 0.2 + 0.5 \cdot 0.2 + 0.3 \cdot 0.6$
 
-$= 0.58$
+$= 0.34$
 
 ### (B) If we observe that the selected fruit is in fact an orange, what is the probability that it came from the green box?
 
@@ -20,11 +20,11 @@ $P(Orange) = P(Orange|red) \cdot P(red) + P(Orange|blue) \cdot P(blue) + P(Orang
 
 $= \frac{4}{10} \cdot 0.2 + \frac{1}{2} \cdot 0.2 + \frac{3}{10} \cdot 0.6$
 
-$= 0.4 \cdot 0.2 + 0.5 \cdot 0.2 + 0.6 \cdot 0.6$
+$= 0.4 \cdot 0.2 + 0.5 \cdot 0.2 + 0.3 \cdot 0.6$
 
-$= 0.54$
+$= 0.36$
 
-$P(green|Orange) = \frac{P(Orange|green) \cdot P(green)}{P(Orange)} = \frac{0.3 \cdot 0.6}{0.54} = \frac{1}{3}$
+$P(green|Orange) = \frac{P(Orange|green) \cdot P(green)}{P(Orange)} = \frac{0.3 \cdot 0.6}{0.36} = \frac{1}{2}$
 
 ## 2. Bishop 1.11
 
@@ -83,34 +83,90 @@ $\Rightarrow \sigma^2 = \frac{1}{N} \sum_{n=1}^N (x_n - \mu)^2$
 
 ### (A) (X ${\perp\!\!\!\perp}$ W | Z,Y) $\wedge$ (X ${\perp\!\!\!\perp}$ Y | Z) $\Rightarrow$ (X ${\perp\!\!\!\perp}$ Y,W | Z)
 
-Since we have $P(X,Y,W\ |\ Z) = P(X\ |\ Y,W,Z) \cdot P(Y,W\ |\ Z)$
-
 $\because X {\perp\!\!\!\perp} W\ |\ Z,Y$
 
-$\therefore P(X\ |\ Y,W,Z) \rightarrow P(X\ |\ Y,Z)$
-
-$\therefore P(X,Y,W\ |\ Z) = P(X\ |\ Y,Z) \cdot P(Y,W\ |\ Z)$
+$\therefore P(X\ |\ Y,W,Z) = P(X\ |\ Y,Z)$
 
 $\because X {\perp\!\!\!\perp} Y\ |\ Z$
 
-$\therefore P(X\ |\ Y,Z) \rightarrow P(X\ |\ Z)$
+$\therefore P(X\ |\ Y,Z) = P(X\ |\ Z)$
 
-$\therefore P(X,Y,W\ |\ Z) = P(X\ |\ Z) \cdot P(Y,W\ |\ Z)$
+$\therefore P(X\ |\ Y,W,Z) = P(X\ |\ Y,Z) = P(X\ |\ Z) $
 
 Hence, we proved $X {\perp\!\!\!\perp} Y,W\ |\ Z$
 
 ### (B) (X ${\perp\!\!\!\perp}$ Y | Z) $\wedge$ (X ${\perp\!\!\!\perp}$ Y | W) $\Rightarrow$ (X ${\perp\!\!\!\perp}$ Y | Z,W)
 
-Since we have $P(X,Y\ |\ Z,W) = P(X\ |\ Y,Z,W) \cdot P(Y\ |\ Z,W)$
+Let's suppose $X,Y,Z$ are i.i.d. random variables (such as flipping a fair coin) with the following probability
 
-$\because X {\perp\!\!\!\perp} Y\ |\ Z$
+$
+\begin{cases}
+P(X=1) = \frac{1}{2} \\
+P(X=-1) = \frac{1}{2} \\
+\end{cases}
+$, $
+\begin{cases}
+P(Y=1) = \frac{1}{2} \\
+P(Y=-1) = \frac{1}{2} \\
+\end{cases}
+$, $
+\begin{cases}
+P(Z=1) = \frac{1}{2} \\
+P(Z=-1) = \frac{1}{2} \\
+\end{cases}
+$
 
-$\therefore P(X\ |\ Y,Z,W) = P(X\ |\ Z,W)$
+In addition, we define event $W$ as $W = XYZ$.
 
+First of all, we need to prove $X {\perp\!\!\!\perp} Y | Z$ and $X {\perp\!\!\!\perp} Y | W$ are true in this scenario
 
-$\therefore P(X,Y\ |\ Z,W) = P(X\ |\ Z,W) \cdot P(Y\ |\ Z,W)$
+- **Proof of $X {\perp\!\!\!\perp} Y | Z$**
+	
+	Since $X,Y,Z$ are i.i.d. random variables, $X$ and $Y$ are independent. Hence we can write $P(X,Y|Z) = P(X|Z)P(Y|Z,X) = P(X|Z)P(Y|Z)$
+	
+	$\therefore X {\perp\!\!\!\perp} Y | Z$ holds
+	
+- **Proof of $X {\perp\!\!\!\perp} Y | W$**
 
-Hence, we proved $X {\perp\!\!\!\perp} Y\ |\ Z,W$
+	$P(X = 1|W = 1) = $
+	
+	$P(X = 1,Y = 1,Z = 1|W = 1) + P(X = 1,Y = 1,Z = -1|W=1)\ +$
+	
+	$P(X = 1,Y = -1,Z = 1|W = 1) + P(X = 1,Y = -1,Z = -1|W = 1) = \frac{1}{4} + \frac{1}{4} + 0 + 0 = \frac{1}{2}$
+	
+	Similarly, we can derive the same result for other combinations of $X$ and $W$. Same thing for combinations of $Y$ and $W$. Therefore, we get $P(X|W) = \frac{1}{2}$, $P(Y|W) = \frac{1}{2}$
+	
+	Also, we have 
+	
+	$P(X = 1,Y = 1|W = 1) = P(X = 1,Y = 1,Z = 1|W = 1) + P(X = 1,Y = 1,Z = -1|W = 1 = \frac{1}{4} + 0 = \frac{1}{4}$
+	
+	Same logic and computation as above, we eventually can get $P(X,Y|W) = \frac{1}{4}$
+	
+	$\because P(X,Y|W) = P(X|W)P(Y|W)\ \therefore X {\perp\!\!\!\perp} Y | W$ holds
+	
+Now, let's compute $P(X|Z,W), P(Y|Z,W)$ and $P(X,Y|Z,W)$
 
+$P(X = 1|Z = 1,W = 1) = P(X = 1,Y = 1|Z = 1,W = 1) + P(X = 1,Y = 1|Z = 1,W = 1) = \frac{1}{2} + 0 = \frac{1}{2}$
 
-$\frac{P(X,Y|Z,W)}{P(Y|Z,W)} = P(X|Y,Z,W)$
+Similarly, we can derive the same result for other combinations of $(X,Z,W)$. Same thing for combinations of $(Y,Z,W)$. Therefore, we get $P(X|Z,W) = \frac{1}{2}$, $P(Y|Z,W) = \frac{1}{2}$
+
+We can expand $P(X,Y|Z,W)$ as $P(X,Y|Z,W) = P(X|Z,W)P(Y|X,Z,W)$, where $P(X|Z,W) = \frac{1}{2}$ as calculated above, and 
+$
+P(Y|X,Z,W) =
+\begin{cases}
+1,\ when\ Y = \frac{W}{XZ} \\
+0,\ when\ Y \ne \frac{W}{XZ} 
+\end{cases}
+$
+
+Therefore, we have 
+
+$
+P(X,Y|Z,W) =
+\begin{cases}
+\frac{1}{2},\ when\ Y = \frac{W}{XZ} \\
+0,\ when\ Y \ne \frac{W}{XZ} 
+\end{cases}
+$
+
+Since $P(X,Y|Z,W)$ does not equal to $P(X|Z,W)P(Y|Z,W) = \frac{1}{4}$, therefore we can conclude that $X {\perp\!\!\!\perp} Y | Z,W$ does not hold
