@@ -1,0 +1,69 @@
+TL;DR (Helpful but not necessarly exhaustive summary of what you have to do; read this whole page for full details):
+1) Download the skeleton Python 3 file and fill in the TODOs.
+2) Make sure you understand the meaning of the command line arguments listed below governing iterations, learning rate, whether to use development data, and the locations of the train, dev, and test data; make your program use them properly.
+3) Experiment: see how performance changes as a function of number of iterations, and see how to best use dev data during training.
+4) Record the above in a README text file to be included with your Python file submission. Also discuss your interpretation of the results.
+5) Download the smoke test script and run it in your submission directory. It will identify some common problems (but not necessarily all problems!). Remove this smoke test script before submitting.
+6) Using the TURN_IN script, submit your single Python file, your README, and (optionally) any performance plots.
+
+Full description:
+
+We have provided you with a skeleton Python 3 file for this assignment. You should download it and fill in the relevant code sections labeled with TODOs. You should not neet to change anything else.
+We recommend Python 3. If you really want to use Python 2, you will need to change the first line of the file by removing the '3', to be this:
+
+#!/usr/bin/python
+
+You should rename the skeleton file to LastName_perceptron.py (replacing LastName with your last name). The file should be executable, meaning it can be run from the command line like this:
+
+./LastName_perceptron.py [arguments]
+
+To do this, run this (replacing LastName with your name of course):
+
+chmod u+x LastName_perceptron.py
+
+IMPORTANT: Your submission should NOT include a copy of the data. The data is in /u/cs246/data/adult on the csug machines.
+
+A large portion of your grade will be determined based on whether the core algorithm is correctly implemented. This will be determined by an automated test. To facilitate this, your program must support the following command line arguments (already included in the skeleton):
+
+--iterations [int]
+Your program should stop after this many iterations through the training data.
+
+--lr [float]
+Your program should use this as the learning rate.
+
+--nodev
+When this is provided, your program should NOT make any use of development data. You may assume that this argument will only be provided when both --iterations and --lr are also provided. Your program should stop after the given number of iterations and report test accuracy calculated with the weights vector that results from the last iteration. IMPORTANT: all weights and the bias should start at 0; do NOT use random initialization.
+
+--train_file [filename]
+Load training data from here (default is /u/cs246/data/adult/a7a.train).
+
+--dev_file [filename]
+Load dev data from here (default is /u/cs246/data/adult/a7a.dev).
+
+--test_file [filename]
+Load test data from here (default is /u/cs246/data/adult/a7a.test).
+
+Note that when the above arguments are not provided, you are free to implement whatever behavior you deem best. You should incorporate the development data. Experiment with performance as a function of learning rate.
+
+Also, to facilitate autograding, it is important that your script output the following information (you are allowed to produce other output, but the following are required, and should each appear on separate lines with nothing else present on that line; items in square brackets are variables):
+
+Test accuracy: [accuracy]
+Feature weights (bias last): [whitespace-delimited feature weights, with bias weight last]
+
+Note that there are 123 features in this assignment, so the second requirement above needs a total of 124 weights.
+
+Below are two input/output examples, which your program should match (you will be tested on a different learning rate and iteration number):
+
+
+$ ./example_perceptron.py --nodev --iterations 1 --lr 1
+Test accuracy: 0.7856045384706299
+Feature weights (bias last): -7.0 -2.0 4.0 2.0 0.0 3.0 -1.0 3.0 7.0 3.0 -1.0 -1.0 0.0 -7.0 3.0 1.0 -2.0 2.0 -5.0 1.0 -2.0 -1.0 2.0 -1.0 3.0 -1.0 -5.0 4.0 1.0 1.0 1.0 5.0 -2.0 -4.0 -8.0 -1.0 1.0 2.0 3.0 6.0 -1.0 -5.0 -2.0 -1.0 -3.0 3.0 3.0 0.0 0.0 2.0 10.0 -2.0 -1.0 0.0 0.0 -6.0 0.0 0.0 7.0 0.0 6.0 0.0 -1.0 -4.0 -3.0 -1.0 1.0 3.0 -3.0 -2.0 -2.0 -4.0 1.0 -7.0 4.0 -5.0 2.0 -5.0 1.0 -1.0 -1.0 3.0 6.0 1.0 1.0 -4.0 3.0 0.0 0.0 -7.0 3.0 -1.0 -2.0 -1.0 4.0 -1.0 0.0 4.0 1.0 1.0 -1.0 -2.0 0.0 -1.0 1.0 0.0 -2.0 0.0 2.0 1.0 0.0 -4.0 -1.0 1.0 1.0 2.0 -1.0 2.0 1.0 -1.0 -1.0 -1.0 0.0 -3.0
+
+$ ./example_perceptron.py --nodev --iterations 10 --lr 2
+Test accuracy: 0.8124335184966316
+Feature weights (bias last): -12.0 -6.0 8.0 6.0 -4.0 0.0 -2.0 12.0 20.0 2.0 2.0 -12.0 0.0 -18.0 6.0 8.0 -4.0 0.0 -4.0 -2.0 0.0 -2.0 2.0 -2.0 6.0 2.0 -10.0 14.0 -2.0 4.0 2.0 14.0 -6.0 -24.0 -18.0 -2.0 -2.0 4.0 10.0 16.0 -8.0 -10.0 -12.0 -2.0 -12.0 20.0 4.0 0.0 0.0 6.0 16.0 -2.0 0.0 4.0 0.0 -10.0 -6.0 -4.0 14.0 0.0 10.0 -2.0 -8.0 0.0 -6.0 -2.0 0.0 8.0 -4.0 -6.0 -6.0 -8.0 0.0 -14.0 6.0 -14.0 6.0 -10.0 -2.0 -6.0 4.0 6.0 10.0 16.0 8.0 -10.0 16.0 -4.0 0.0 -18.0 10.0 -2.0 -2.0 -8.0 10.0 -2.0 0.0 8.0 10.0 8.0 4.0 -20.0 -2.0 -6.0 16.0 0.0 -10.0 -4.0 24.0 -6.0 0.0 -16.0 -12.0 6.0 10.0 12.0 -12.0 24.0 4.0 -8.0 -16.0 -6.0 0.0 -8.0
+
+We have also provided a smoke test script, which is just a Python file that you can download and run in the same directory as your perceptron file. It will test for some common mistakes, and verify that the correct output is produced for one example. Make sure to do this test on the actual csug machines before submitting.
+
+Don't worry about the fact that a portion of the grading is automated; any failed tests will be looked at by a human before any points are deducted.
+
