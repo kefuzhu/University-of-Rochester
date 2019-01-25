@@ -1,0 +1,103 @@
+#!/bin/bash
+#
+# 08/29/03 - copied from /u/myros/commands
+#
+# script to turn in a CSC 247/447 assignment
+# takes a single argument: the name of the directory whose files
+# should be made available to the TA
+#
+# the following lines have to be customized for troi vs. CS machines:
+
+#echo $0;
+#echo $1;
+#echo $2;
+
+tempd=/var/tmp
+
+if test $# -ne 1 ; then
+    echo "This script takes a single argument: the name of the directory"
+    echo "whose files should be made available to the TA."
+    echo "To specify the current directory, use '.'"
+    exit 1
+fi
+
+#echo "Sorry, Deadline for HW8 ends"
+#exit 0
+
+
+userID=`id -un`
+
+#id -un
+#id -unr
+
+targetd=/u/cs246/submissions/${userID}_$$
+
+sourced=$1
+
+
+
+tmpd=${tempd}/SUBMISSION_$$;
+
+if test ! -d $sourced ; then
+    echo "$sourced is not a directory"
+    exit 1
+fi
+
+# test for a few common mistakes
+if test ! -r $sourced/README ; then
+    echo "can't read $sourced/README. Please include one. (Case sensitive. No extension, such as *.txt)"
+    exit 1
+fi
+
+if test  -e $sourced/SUBMITTED ; then
+    echo "There is a file SUBMITTED in your directory."
+    echo "Please rename it before submitting the homework"
+    exit 1
+fi
+
+if test  -e $sourced/COMMENTS ; then
+    echo "There is a file COMMENTS in your directory."
+    echo "Please rename it before submitting the homework"
+    exit 1
+fi
+
+if test  -e $tmpd ; then
+    echo "There exists a directory named $tmpd"
+    echo "which this script is trying to use as a temporary directory"
+    echo "Please rename it before submitting the homework"
+    exit 1
+fi
+
+#if (/u/michalak/bin/copy_with_permissions.sh $sourced $tmpd 666 777); then
+#if (/u/zhanghao/bin/copy_with_permissions.sh $sourced $tmpd 666 777); then
+if (/u/cs246/copy_with_permissions.sh $sourced $tmpd 666 777); then
+
+    echo "Done copying files into a temporary directory"
+
+    date >$tmpd/SUBMITTED
+    cat /dev/null >$tmpd/COMMENTS
+
+    chmod 666 $tmpd/SUBMITTED
+    chmod 666 $tmpd/COMMENTS
+
+#    if /u/michalak/bin/turn_in_exec $tmpd $targetd; then
+#    if /u/zhanghao/bin/turn_in_exec $tmpd $targetd; then
+    if /u/cs246/turn_in_exec $tmpd $targetd; then
+
+	echo " "
+	echo "TURN_IN has completed successfully."
+
+	#echo "A log of files submitted has been sent to your mailbox."
+	#ls -R $tmpd | mail -s "[CSC246/446] Homework submission confirmation" ${userID}
+	###
+
+	rm -r $tmpd;
+	exit 0;
+    fi
+
+    rm -r $tmpd;
+
+fi
+
+# if we are here, things went wrong
+exit 1;
