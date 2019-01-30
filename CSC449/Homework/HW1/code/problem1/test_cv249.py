@@ -32,11 +32,12 @@ class TestCV249(unittest.TestCase):
         self.assertTrue(np.all(unsharp_mask_img == unsharp_mask_img2))
 
     def test_edge_det_sobel(self):
-        g_x = cv2.Sobel(self.img, -1, 1, 0)
-        g_y = cv2.Sobel(self.img, -1, 0, 1)
+        gray_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        g_x = cv2.Sobel(gray_img, -1, 1, 0, ksize=3)
+        g_y = cv2.Sobel(gray_img, -1, 0, 1, ksize=3)
         g = np.sqrt(g_x ** 2 + g_y ** 2).astype(np.uint8)
 
-        g2 = self.cv.edge_det_sobel(self.img)
+        g2 = self.cv.edge_det_sobel(gray_img)
         self.assertTrue(np.all(g == g2))
 
 

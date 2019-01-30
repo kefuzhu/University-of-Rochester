@@ -4,7 +4,7 @@ import cv2
 
 class CV249:
     def cvt_to_gray(self, img):
-        # Note that cv2.imread will read the image to BRG space rather than RGB space
+        # Note that cv2.imread will read the image to BGR space rather than RGB space
 
         # TODO: your implementation
         pass
@@ -53,10 +53,6 @@ class CV249:
         
         # TODO: your implementation
         pass
-
-        # Solution:
-        masked_img = img - self.blur(img, kernel_size=(3, 3))
-        return img + masked_img
 
     def edge_det_sobel(self, img):
         """detect edges with sobel filter
