@@ -31,6 +31,7 @@ class TestLayer(unittest.TestCase):
             conv.W = weight
             conv.b = bias
             test_out = conv(x)
+
             self.assertTrue(np.allclose(out, test_out))
 
     def test_max_pool(self):
