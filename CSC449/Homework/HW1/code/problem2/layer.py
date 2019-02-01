@@ -1,5 +1,6 @@
 import numpy as np
 
+# Signature: Kefu Zhu
 
 class Conv2D(object):
     """2D convolutional layer.
@@ -72,7 +73,45 @@ class Conv2D(object):
                 'Width doesn\'t work'
 
         # TODO: Put your code below
-        pass
+
+        # Parameters
+        W = self.W # (out_channels, in_channels, kernel_height, kernel_width)
+        bias = self.b # out_channels
+        out_channels,in_channels,filter_height,filter_width  = W.shape
+        img_height = x.shape[1]
+        img_width = x.shape[2]
+        stride_height = s[0] if s[0] != 0 else 1
+        stride_width = s[1] if s[1] != 0 else 1
+
+        # Initialize empty feature map
+        feature_maps = np.zeros((out_channels,
+                                (img_height - filter_height + 2 * p[0])//s[0] + 1,
+                                (img_width - filter_width + 2 * p[1])//s[1] + 1))
+
+        # Convolve the image by each filter
+        for filter_index in range(out_channels):
+            # Obtain the current filter
+            _filter = W[filter_index,:] # (in_channels, kernel_height, kernel_width)
+            # Loop through each row in the feature map
+            for row in range(feature_maps.shape[1]):
+                # Loop through each column in the feature map
+                for column in range(feature_maps.shape[2]):
+                    # Start row index for the convolution area
+                    row_start = row*stride_height
+                    # End row index for the convolution area
+                    row_end = row*stride_height + filter_height
+                    # Start column index for the convolution area
+                    column_start = column*stride_width
+                    # End column index for the convolution area
+                    column_end = column*stride_width + filter_width
+                    # Convolution area
+                    conv_area = x_padded[:,row_start:row_end,column_start:column_end]
+                    # Perform element-wise multiplication, add the bias, and store the result value in the feature map
+                    feature_maps[filter_index,row,column] = np.sum(conv_area * _filter) + bias[filter_index]
+
+        # Return the feature map
+        return feature_maps
+
 
 
 class MaxPool2D:
@@ -112,7 +151,42 @@ class MaxPool2D:
                 'Width doesn\'t work'
 
         # TODO: Put your code below
-        pass
+        
+        # Parameters
+        in_channels, img_height, img_width = x.shape
+        filter_size = self.kernel_size[0]
+        stride = self.stride[0]
+        pad = self.padding[0]
+
+        # Initialize empty feature map
+        feature_maps = np.zeros((in_channels,
+                                (img_height - filter_size + 2 * pad)//stride + 1,
+                                (img_width - filter_size + 2 * pad)//stride + 1))
+
+        # Perform max pooling on each channel independently
+        for c in range(in_channels):
+            # Obtain the channel
+            channel = x_padded[c,:] # (in_channels, kernel_height, kernel_width)
+            # Loop through each row in the feature map
+            for row in range(feature_maps.shape[1]):
+                # Loop through each column in the feature map
+                for column in range(feature_maps.shape[2]):
+                    # Start row index for the convolution area
+                    row_start = row*stride
+                    # End row index for the convolution area
+                    row_end = row*stride + filter_size
+                    # Start column index for the convolution area
+                    column_start = column*stride
+                    # End column index for the convolution area
+                    column_end = column*stride + filter_size
+                    # Pooling area
+                    pool_area = x_padded[c,row_start:row_end,column_start:column_end]
+                    # Perform max pooling and store the value in the feature map
+                    feature_maps[c,row,column] = np.max(pool_area)
+
+        # Return the feature map
+        return feature_maps
+
 
 
 class AvgPool2D:
@@ -152,4 +226,39 @@ class AvgPool2D:
                 'Width doesn\'t work'
 
         # TODO: Put your code below
-        pass
+        
+        # Parameters
+        in_channels, img_height, img_width = x.shape
+        filter_size = self.kernel_size[0]
+        stride = self.stride[0]
+        pad = self.padding[0]
+
+        # Initialize empty feature map
+        feature_maps = np.zeros((in_channels,
+                                (img_height - filter_size + 2 * pad)//stride + 1,
+                                (img_width - filter_size + 2 * pad)//stride + 1))
+
+        # Perform max pooling on each channel independently
+        for c in range(in_channels):
+            # Obtain the channel
+            channel = x_padded[c,:] # (in_channels, kernel_height, kernel_width)
+            # Loop through each row in the feature map
+            for row in range(feature_maps.shape[1]):
+                # Loop through each column in the feature map
+                for column in range(feature_maps.shape[2]):
+                    # Start row index for the convolution area
+                    row_start = row*stride
+                    # End row index for the convolution area
+                    row_end = row*stride + filter_size
+                    # Start column index for the convolution area
+                    column_start = column*stride
+                    # End column index for the convolution area
+                    column_end = column*stride + filter_size
+                    # Pooling area
+                    pool_area = x_padded[c,row_start:row_end,column_start:column_end]
+                    # Perform max pooling and store the value in the feature map
+                    feature_maps[c,row,column] = np.mean(pool_area)
+
+        # Return the feature map
+        return feature_maps
+
