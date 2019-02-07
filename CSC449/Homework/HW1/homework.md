@@ -48,6 +48,7 @@ Define the eigenvalues of the $M$ matrix to be $\lambda_1, \lambda_2, \lambda_3$
 
 The criterion to extract "3D corners" is to have large values for all $\lambda_1,\lambda_2,\lambda_3$
 
+
 ## 2. 
 
 The variation among three eigenvalues $\lambda_1,\lambda_2,\lambda_3$ can be summarized as below
