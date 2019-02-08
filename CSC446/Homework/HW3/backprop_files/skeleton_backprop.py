@@ -3,8 +3,8 @@ import numpy as np
 from io import StringIO
 
 NUM_FEATURES = 124 #features are 1 through 123 (123 only in test set), +1 for the bias
-DATA_PATH = "/u/cs246/data/adult/" #TODO: if doing development somewhere other than the cycle server, change this to the directory where a7a.train, a7a.dev, and a7a.test are
-
+# DATA_PATH = "/u/cs246/data/adult/" #TODO: if doing development somewhere other than the cycle server, change this to the directory where a7a.train, a7a.dev, and a7a.test are
+DATA_PATH = 'adult/'
 #returns the label and feature value vector for one datapoint (represented as a line (string) from the data file)
 def parse_line(line):
     tokens = line.split()
@@ -44,9 +44,11 @@ def init_model(args):
     #At this point, w1 has shape (hidden_dim, NUM_FEATURES) and w2 has shape (1, hidden_dim + 1). In both, the last column is the bias weights.
 
 
-    #TODO: Replace this with whatever you want to use to represent the network; you could use use a tuple of (w1,w2), make a class, etc.
-    model = None
-    raise NotImplementedError #TODO: delete this once you implement this function
+    # #TODO: Replace this with whatever you want to use to represent the network; you could use use a tuple of (w1,w2), make a class, etc.
+    # model = None
+    # raise NotImplementedError #TODO: delete this once you implement this function
+
+    model = (w1,w2)
     return model
 
 def train_model(model, train_ys, train_xs, dev_ys, dev_xs, args):
@@ -109,6 +111,8 @@ def main():
     test_ys, test_xs = parse_data(args.test_file)
 
     model = init_model(args)
+    print(model[0].shape)
+    print(model[1].shape)
     model = train_model(model, train_ys, train_xs, dev_ys, dev_xs, args)
     accuracy = test_accuracy(model, test_ys, test_xs)
     print('Test accuracy: {}'.format(accuracy))
