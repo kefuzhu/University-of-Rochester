@@ -54,7 +54,7 @@ def init_model(args):
 
 def train_model(model, train_ys, train_xs, dev_ys, dev_xs, args):
     #TODO: Implement training for the given model, respecting args
-
+# 
     # If we use dev set
     if dev_xs is not None:
         import time
