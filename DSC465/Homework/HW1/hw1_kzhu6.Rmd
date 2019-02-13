@@ -1,0 +1,601 @@
+---
+title: "DSC 465, Homework 1"
+author: "Kefu Zhu"
+date: "02/08/2019"
+output: html_document
+---
+
+# Question 1
+
+```{r}
+# Load library
+library(ISLR)
+library(MASS)
+```
+
+## (a)
+
+```{r}
+# Boxplot
+boxplot(OJ$LoyalCH ~ OJ$Purchase)
+```
+
+From the above box plot, we can clearly see a difference between two purchase groups, indicating the `LoyalCH` score is different between these two groups.
+
+```{r}
+wilcox.test(OJ[OJ$Purchase == 'CH','LoyalCH'], OJ[OJ$Purchase == 'MM','LoyalCH'])
+```
+
+**Answer**:
+
+Because the p-value from wilcoxon rank sum test is smaller than 0.05, we **reject the null hypothesis** that the median of `LoyalCH` score between two purchase groups (CH and MM) is the same.
+
+## (b)
+
+```{r}
+# Boxplot
+boxplot(OJ$LoyalCH ~ OJ$StoreID)
+```
+
+```{r}
+fit = aov(OJ$LoyalCH ~ as.factor(OJ$StoreID))
+summary(fit)
+```
+
+**Answer**: 
+
+Because the p-value from ANOVA is smaller than 0.05, we **reject the null hypothesis** that the mean loyalty score among stores are the same and conclude that mean loyalty score varies by store at a significance level of 5%.
+
+## (c)
+
+```{r}
+fit.Tukey = TukeyHSD(fit)
+fit.Tukey
+```
+
+**Answer**: 
+
+Based on the result from Tukey's pairwise test, we can conclude the mean loyalty scores in different stores is in the following order, `Store 4 > Store 7 > Store 1 , Store 2 > Store 3` at a significance level of 5%. 
+
+Note: We cannot say whether mean loyalty score is higher or lower in `Store 1` or `Store 2`.
+
+## (d)
+
+```{r}
+res = fit$residuals
+qqnorm(res)
+qqline(res)
+```
+
+```{r}
+# Empirical Rule
+within_1sd = sum(abs(res - mean(res)) < sd(res))/length(res)
+within_2sd = sum(abs(res - mean(res)) < 2*sd(res))/length(res)
+within_3sd = sum(abs(res - mean(res)) < 3*sd(res))/length(res)
+```
+
+```{r}
+# Proportion of residuals within 1 standard deviation
+within_1sd
+```
+
+```{r}
+# Proportion of residuals within 2 standard deviation
+within_2sd
+```
+
+```{r}
+# Proportion of residuals within 3 standard deviation
+within_3sd
+```
+
+**Answer**: 
+
+Compare the actual proportion value with the empirical rule, 68%-95%-99.7%, we can clearly see the proportion is off by quite a lot. Therefore, we can conclude that the normality assumption is violated.
+
+The reason we use the model residuals rather than the response variable is that the loyalty scores from different groups are assumed coming from indepent normal distributions rather than from one single normal distribution. So it is only reasonable for us to assess the normality of residuals within groups.
+
+## (e)
+
+### (i)
+
+Define a random variable $M = F(x)$, for any $p \in [0,1]$
+
+$\because P(M \le p) = P(F(x) \le p) = P(x \le F^{-1}(p)) = F(F^{-1}(p)) = p$
+
+$\therefore F(x)$ follows uniform distribution
+
+Define a random varialbe $N = 1 - F(x)$, for any $q \in [0,1]$
+
+$\because P(N \le q) = P(1-F(x) \le q) = P(1-q \le F(x)) = 1 - P(1-q \ge F(x)) = 1-(1-q) = q$
+
+$\therefore 1-F(x)$ follows uniform distribution
+
+### (ii)
+
+```{r}
+p_values <- c()
+M = 100000
+for(i in 1:M){
+  seed = i*2
+  set.seed(seed)
+  boot_strap_index = sample(1:nrow(OJ), nrow(OJ), replace = T)
+  anova.fit = aov(res[boot_strap_index] ~ as.factor(OJ[,'StoreID']))
+  p_values = c(p_values, summary(anova.fit)[[1]][["Pr(>F)"]][1])
+}
+```
+
+```{r}
+hist(p_values, nclass = 25)
+```
+
+```{r}
+alpha_table = data.frame(matrix(ncol = 3, nrow = 4))
+colnames(alpha_table) = c('alpha_hat','Z','SE')
+index = 1
+
+for(alpha in c(0.001,0.01,0.05,0.1)){
+  alpha_hat = sum(p_values < alpha)/length(p_values)
+  alpha_table[index,'alpha_hat'] = alpha_hat
+  alpha_table[index,'SE'] = sqrt(alpha*(1-alpha)/M)
+  alpha_table[index,'Z'] = (alpha_hat - alpha)/sqrt(alpha*(1-alpha)/M)
+  index = index + 1
+}
+```
+
+```{r}
+alpha_table
+```
+
+### (iii) 
+
+**Answer**: The standard error of $\hat{\alpha}$ for $\alpha$ = 0.1 is `r alpha_table$SE[4]`. Given $M = 100000$, we can say that the bootstrap procedure is accurate in general.
+
+## (f)
+
+```{r}
+y_star = 1/(1-OJ[OJ$StoreID == 7,'LoyalCH'])
+
+tranform.p_values <- c()
+M = 100000
+for(i in 1:M){
+  seed = i*2
+  set.seed(seed)
+  boot_strap_index = sample(length(y_star), nrow(OJ), replace = T)
+  transform.anova.fit = aov(y_star[boot_strap_index] ~ as.factor(OJ[,'StoreID']))
+  tranform.p_values = c(tranform.p_values, summary(transform.anova.fit)[[1]][["Pr(>F)"]][1])
+}
+```
+
+```{r}
+hist(tranform.p_values, nclass = 25)
+```
+
+**Answer**:
+
+Since the distribution of p-value is not uniform, it is not accurate
+
+## (g)
+
+```{r}
+bc = boxcox(OJ$LoyalCH ~ OJ$StoreID, lambda = seq(-1, 1, length=10))
+```
+
+```{r}
+# Optimal lamda
+best_lambda = bc$x[which.max(bc$y)]
+best_lambda
+```
+
+Based on the plot above, the optimal value for $\lambda$ is `bc$x[which.max(bc$y)]`. Therefore we perform the following Box-Cox transformation
+
+<center>
+$y^{\lambda} = \frac{y^{\lambda} - 1}{\lambda}$
+</center>
+
+```{r}
+y_lambda = (OJ[OJ$StoreID == 7,'LoyalCH']**best_lambda - 1)/best_lambda
+
+lambda_tranform.p_values <- c()
+M = 100000
+for(i in 1:M){
+  seed = i*2
+  set.seed(seed)
+  boot_strap_index = sample(length(y_lambda), nrow(OJ), replace = T)
+  transform.anova.fit = aov(y_lambda[boot_strap_index] ~ as.factor(OJ[,'StoreID']))
+  lambda_tranform.p_values = c(lambda_tranform.p_values, summary(transform.anova.fit)[[1]][["Pr(>F)"]][1])
+}
+```
+
+```{r}
+hist(lambda_tranform.p_values, nclass = 25)
+```
+
+**Answer**:
+
+Since the distribution of p-value is uniform, it is accurate
+
+# Question 2
+
+## (a)
+```{r}
+lm.PriceDiff = lm(LoyalCH ~ PriceDiff, data = OJ)
+summary(lm.PriceDiff)
+```
+
+**Answer**:
+
+Based on the model summary, because both the p-value for `PriceDiff` and the p-value for the F-test is smaller than 0.05, we can conclude that `LoyalCH` varies with `PriceDiff` at a significance level of 5%.
+
+## (b)
+```{r}
+lm.StoreID = lm(LoyalCH ~ as.factor(StoreID),data = OJ)
+summary(lm.StoreID)
+```
+
+**Answer**:
+
+The smaller than 0.05 p-value of F-test from the model summary indicates that `LoyalCH` varies with `StoreID`, which also verifies the result from **Q1 (b)** saying the mean loyalty score among stores are NOT the same.
+
+## (c)
+
+```{r}
+lm.PriceDiff_StoreID = lm(LoyalCH ~ PriceDiff + as.factor(StoreID), data = OJ)
+summary(lm.PriceDiff_StoreID)
+```
+
+```{r}
+lm.PriceDiff_StoreID_interactions = lm(LoyalCH ~ PriceDiff * as.factor(StoreID), data = OJ)
+summary(lm.PriceDiff_StoreID_interactions)
+```
+
+```{r}
+OJ_Store1 = OJ[OJ$StoreID == 1,]
+OJ_Store2 = OJ[OJ$StoreID == 2,]
+OJ_Store3 = OJ[OJ$StoreID == 3,]
+OJ_Store4 = OJ[OJ$StoreID == 4,]
+OJ_Store7 = OJ[OJ$StoreID == 7,]
+```
+
+
+```{r}
+plot(OJ$LoyalCH ~ OJ$PriceDiff, pch = 20, cex = 0.6, 
+    xlab = 'PriceDiff',
+    ylab = 'LoyalCH',
+    main = 'Linear Model: LoyalCH ~ PriceDiff')
+abline(lm.PriceDiff, lwd = 2, col = 'blue')
+```
+
+```{r}
+plot(OJ$LoyalCH ~ OJ$PriceDiff, pch = 20, cex = 0.6, 
+    xlab = 'PriceDiff',
+    ylab = 'LoyalCH',
+    main = 'Linear Model: LoyalCH ~ StoreID')
+abline(h = lm.StoreID$coefficients[1], 
+       lwd = 2, col = 'blue')
+abline(h = lm.StoreID$coefficients[1] + lm.StoreID$coefficients[2], 
+       lwd = 2, col = 'red')
+abline(h = lm.StoreID$coefficients[1] + lm.StoreID$coefficients[3], 
+       lwd = 2, col = 'violet')
+abline(h = lm.StoreID$coefficients[1] + lm.StoreID$coefficients[4], 
+       lwd = 2, col = 'green')
+abline(h = lm.StoreID$coefficients[1] + lm.StoreID$coefficients[5], 
+       lwd = 2, col = 'brown')
+legend('bottomright', cex = 0.6,
+       legend = c('Store 1','Store 2','Store 3','Store 4','Store 7'),
+       col = c('blue','red','violet','green','brown'),
+       lty = 1,
+       bg = 'lightblue')
+```
+
+
+```{r}
+plot(OJ$LoyalCH ~ OJ$PriceDiff, pch = 20, cex = 0.6,
+    xlab = 'PriceDiff',
+    ylab = 'LoyalCH',
+    main = 'Linear Model: LoyalCH ~ PriceDiff + StoreID')
+Store_1_predict = predict(lm.PriceDiff_StoreID, newdata = OJ_Store1)
+Store_2_predict = predict(lm.PriceDiff_StoreID, newdata = OJ_Store2)
+Store_3_predict = predict(lm.PriceDiff_StoreID, newdata = OJ_Store3)
+Store_4_predict = predict(lm.PriceDiff_StoreID, newdata = OJ_Store4)
+Store_7_predict = predict(lm.PriceDiff_StoreID, newdata = OJ_Store7)
+lines(x = OJ_Store1$PriceDiff, y = Store_1_predict, lwd = 2, col = 'blue')
+lines(x = OJ_Store2$PriceDiff, y = Store_2_predict, lwd = 2, col = 'red')
+lines(x = OJ_Store3$PriceDiff, y = Store_3_predict, lwd = 2, col = 'violet')
+lines(x = OJ_Store4$PriceDiff, y = Store_4_predict, lwd = 2, col = 'green')
+lines(x = OJ_Store7$PriceDiff, y = Store_7_predict, lwd = 2, col = 'brown')
+legend('topleft', cex = 0.6,
+       legend = c('Store 1','Store 2','Store 3','Store 4','Store 7'),
+       col = c('blue','red','violet','green','brown'),
+       lty = 1,
+       bg = 'lightblue')
+```
+
+```{r}
+plot(OJ$LoyalCH ~ OJ$PriceDiff, pch = 20, cex = 0.6,
+    xlab = 'PriceDiff',
+    ylab = 'LoyalCH',
+    main = 'Linear Model: LoyalCH ~ PriceDiff * StoreID')
+Store_1_predict = predict(lm.PriceDiff_StoreID_interactions, newdata = OJ_Store1)
+Store_2_predict = predict(lm.PriceDiff_StoreID_interactions, newdata = OJ_Store2)
+Store_3_predict = predict(lm.PriceDiff_StoreID_interactions, newdata = OJ_Store3)
+Store_4_predict = predict(lm.PriceDiff_StoreID_interactions, newdata = OJ_Store4)
+Store_7_predict = predict(lm.PriceDiff_StoreID_interactions, newdata = OJ_Store7)
+lines(x = OJ_Store1$PriceDiff, y = Store_1_predict, lwd = 2, col = 'blue')
+lines(x = OJ_Store2$PriceDiff, y = Store_2_predict, lwd = 2, col = 'red')
+lines(x = OJ_Store3$PriceDiff, y = Store_3_predict, lwd = 2, col = 'violet')
+lines(x = OJ_Store4$PriceDiff, y = Store_4_predict, lwd = 2, col = 'green')
+lines(x = OJ_Store7$PriceDiff, y = Store_7_predict, lwd = 2, col = 'brown')
+legend('topleft', cex = 0.6,
+       legend = c('Store 1','Store 2','Store 3','Store 4','Store 7'),
+       col = c('blue','red','violet','green','brown'),
+       lty = 1,
+       bg = 'lightblue')
+```
+
+## (d)
+```{r}
+SSE_table = data.frame(matrix(ncol = 3, nrow = 4))
+colnames(SSE_table) = c('Model','SSE','df')
+SSE_table$Model = seq(1,4)
+SSE_table$SSE = c(sum(lm.PriceDiff$residuals**2),
+                  sum(lm.StoreID$residuals**2),
+                  sum(lm.PriceDiff_StoreID$residuals**2),
+                  sum(lm.PriceDiff_StoreID_interactions$residuals**2))
+SSE_table$df = c(lm.PriceDiff$df.residual,
+                 lm.StoreID$df.residual,
+                 lm.PriceDiff_StoreID$df.residual,
+                 lm.PriceDiff_StoreID_interactions$df.residual)
+```
+
+```{r}
+knitr::kable(SSE_table)
+```
+
+- Both Model 1 and 2 are a reduced models from Model 3 or Model 4
+- Model 3 is a reduced model from Model 4
+
+```{r}
+# SSE
+SSE_m1 = SSE_table[SSE_table$Model == 1,'SSE']
+SSE_m2 = SSE_table[SSE_table$Model == 2,'SSE']
+SSE_m3 = SSE_table[SSE_table$Model == 3,'SSE']
+SSE_m4 = SSE_table[SSE_table$Model == 4,'SSE']
+# Number of parameters (excluding the intercept)
+df_m1 = nrow(OJ) - SSE_table[SSE_table$Model == 1,'df'] - 1
+df_m2 = nrow(OJ) - SSE_table[SSE_table$Model == 2,'df'] - 1
+df_m3 = nrow(OJ) - SSE_table[SSE_table$Model == 3,'df'] - 1
+df_m4 = nrow(OJ) - SSE_table[SSE_table$Model == 4,'df'] - 1
+# F-test (F_full.model_reduced.model)
+F_3_1 = ((SSE_m1 - SSE_m3)/(df_m3 - df_m1))/(SSE_m3/(nrow(OJ) - (df_m3 + 1)))
+F_3_2 = ((SSE_m2 - SSE_m3)/(df_m3 - df_m2))/(SSE_m3/(nrow(OJ) - (df_m3 + 1)))
+F_4_3 = ((SSE_m3 - SSE_m4)/(df_m4 - df_m3))/(SSE_m4/(nrow(OJ) - (df_m4 + 1)))
+```
+
+**Goodness of fit test**
+
+- **Model 3 (full) vs. Model 1 (reduced)**: 
+
+  F test statistic is `r F_3_1`, with degree of freedom of `r df_m3 - df_m1` and `r nrow(OJ) - (df_m3 + 1)`. 
+  
+  Because the F statistic is greater than the critical value $\chi_{4,\infty,0.05}^2 = 2.37$, so we can **REJECT** the null hypothesis that the reduced model is beteer at a significance level of 5%, andconclude that **Model 3 improves Model 1**.
+  
+- **Model 3 (full) vs. Model 2 (reduced)**: 
+
+  F test statistic is `r F_3_2`, with degree of freedom of `r df_m3 - df_m2` and `r nrow(OJ) - (df_m3 + 1)`. 
+  
+  Because the F statistic is greater than the critical value $\chi_{1,\infty,0.05}^2 = 3.84$, so we can **REJECT** the null hypothesis that the reduced model is beteer at a significance level of 5%, and conclude that **Model 3 improves Model 2**.
+
+- **Model 4 (full) vs. Model 3 (reduced)**: 
+
+  F test statistic is `r F_4_3`, with degree of freedom of `r df_m4 - df_m3` and `r nrow(OJ) - (df_m4 + 1)`. 
+  
+  Because the F statistic is smaller than the critical value $\chi_{4,\infty,0.05}^2 = 2.37$, so we **FAIL TO REJECT** the null hypothesis that the reduced model is beteer at a significance level of 5%, and conclude that **Model 4 DOES NOT significantly improve Model 3**.
+
+```{r}
+anova(lm.PriceDiff, lm.PriceDiff_StoreID)
+```
+
+```{r}
+anova(lm.StoreID, lm.PriceDiff_StoreID)
+```
+
+```{r}
+anova(lm.PriceDiff_StoreID, lm.PriceDiff_StoreID_interactions)
+```
+
+**Answer**: Results from `anova` function verify that previous calculations are correct.
+
+## (e)
+```{r}
+m2_Store1 = lm(LoyalCH ~ as.factor(StoreID) + I(PriceDiff*(StoreID == 1)), data = OJ)
+m2_Store2 = lm(LoyalCH ~ as.factor(StoreID) + I(PriceDiff*(StoreID == 2)), data = OJ)
+m2_Store3 = lm(LoyalCH ~ as.factor(StoreID) + I(PriceDiff*(StoreID == 3)), data = OJ)
+m2_Store4 = lm(LoyalCH ~ as.factor(StoreID) + I(PriceDiff*(StoreID == 4)), data = OJ)
+m2_Store7 = lm(LoyalCH ~ as.factor(StoreID) + I(PriceDiff*(StoreID == 7)), data = OJ)
+```
+
+```{r}
+anova(lm.StoreID,m2_Store1)
+```
+
+```{r}
+anova(lm.StoreID,m2_Store2)
+```
+
+```{r}
+anova(lm.StoreID,m2_Store3)
+```
+
+```{r}
+anova(lm.StoreID,m2_Store4)
+```
+
+```{r}
+anova(lm.StoreID,m2_Store7)
+```
+
+**Answer**:
+
+- **Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==1))$ (full) vs. Model 2  (reduced)**: The p-value from F-test is **0.01579**
+- **Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==2))$ (full) vs. Model 2  (reduced)**: The p-value from F-test is **0.8926**
+- **Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==3))$ (full) vs. Model 2  (reduced)**: The p-value from F-test is **0.9945**
+- **Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==4))$ (full) vs. Model 2  (reduced)**: The p-value from F-test is **0.9222**
+- **Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==7))$ (full) vs. Model 2  (reduced)**: The p-value from F-test is **0.0001737**
+
+## (f)
+
+**Answer**:
+
+Based on the Beonferroni multiple test procedure, since we want to simultaneously report 5 confidence intervals with $\alpha_{FWE} = 0.05$, we need to compare the F test statistics with $\chi_{1,\infty,0.01}^2$
+
+Because $\chi_{1,\infty,0.01}^2 = 6.63$, only the F test statistic, $14.197$, from the F-test on 
+
+<center>
+**Model 2 (full) vs. Model 2 + $\beta^{'} \times I(PriceDiff*(StoreID==7))$** 
+</center>
+<br>
+is larger than the critical value. Therefore we can conclude that `LoyalCH` varies with `PriceDiff` in `Store 7` at a significance level of 5%.
+
+# Question 3
+
+## (a)
+
+$\because \beta = \begin{bmatrix} \beta_1 \\ \beta_2 \\ ... \\ \beta_q \\ \end{bmatrix}, X = \begin{bmatrix} x_{11} & x_{12} & x_{13} & ... & x_{1q} \\ x_{21} & x_{22} & x_{23} & ... & x_{2q} \\ ... & ... & ... & ... & ... \\ x_{n1} & x_{n2} & x_{n3} & ... & x_{nq} \\ \end{bmatrix}$
+
+$\therefore X^TX= \begin{bmatrix} x_{11} & x_{21} & x_{31} & ... & x_{q1} \\ x_{12} & x_{22} & x_{32} & ... & x_{q2} \\ ... & ... & ... & ... & ... \\ x_{1n} & x_{2n} & x_{3n} & ... & x_{qn} \\ \end{bmatrix}\begin{bmatrix} x_{11} & x_{12} & x_{13} & ... & x_{1q} \\ x_{21} & x_{22} & x_{23} & ... & x_{2q} \\ ... & ... & ... & ... & ... \\ x_{n1} & x_{n2} & x_{n3} & ... & x_{nq} \\ \end{bmatrix} = \begin{bmatrix} \sum_{i=1}^nx_{i1}^2 & \sum_{i=1}^nx_{i1}x_{i2} & ... & \sum_{i=1}^nx_{i1}x_{iq} \\ ... & ... & ... & ... \\ \sum_{i=1}^nx_{iq}x_{i1} & \sum_{i=1}^nx_{iq}x_{i2} & ... & \sum_{i=1}^nx_{iq}^2 \\ \end{bmatrix}$
+
+Then we can observe that $X^TX$ is a diagonal matrix if and only if $\sum_{i=1}^nx_{ij}x_{ik} = 0$ for each pair $j \ne k$
+
+Therefore, we can see $\sum_{\hat{\beta}}$ is also a diagonal matrix $\Rightarrow$ the covariance of $\hat{\beta}$ is zero $\Rightarrow$ regression coefficients are mutually uncorrelated
+
+## (b)
+
+$\because \hat{\beta} = (X^TX)^{-1}X^Ty, \hat{\beta^{'}} = (X^{'T}X)^{-1}X^{'T}y, z_i = x_iA$
+
+To avoid collinearity, we substitude $X^{'}$ with $XA$
+
+$\therefore \hat{\beta^{'}} = ((XA)^TXA)^{-1}(XA)^Ty$
+
+For $y_i = x_i\beta$, $\hat{y_i} = x_i(X^TX)^{-1}X^Ty$
+
+For $y_i = z_i\beta^{'}$, $\hat{y_i^{'}} = x_iA((XA)^TXA)^{-1}(XA)^Ty = x_iA(X^TA^TXA)^{-1}X^TA^T$
+
+Because $A$ is a matrix of $(p+1) \times (p+1)$, $(X^TA^TXA)^{-1} = A^{-1}(X^TX)^{-1}(A^T)^{-1} \rightarrow \hat{y_i^{'}} = x_i(X^TX)^{-1}X^Ty$
+
+Therefore, the two models are equivalent in the sense that the fitted values $\hat{y_i}$ must be the same.
+
+In addition, we can derive the relationship between $\hat{\beta}$ and $\hat{\beta^{'}}$
+
+$\begin{cases} \hat{\beta} = (X^TX)^{-1}X^Ty = X^{-1}y \\ \hat{\beta^{'}} = ((XA)^TXA)^{-1}(XA)^Ty = A^{-1}X^{-1}y\end{cases} \Rightarrow \hat{\beta^{'}} = A^{-1}\hat{\beta}$
+
+## (c)
+
+From part(a), we know that $X^TX$ is a diagonal matrix if and only if $\sum_{i=1}^nx_{ij}x_{ik} = 0$ for each pair $j \ne k$.
+
+First we will try to prove the components of $\hat{\beta^{'}}$ is uncorrelated:
+
+From part (b), we substitude $X^{'}$ with $XA$. Then we have $X^{'T}X^{'} = A^TX^TAX$
+
+$\because XA = \begin{bmatrix} 1 & x_1 \\ ... & ... \\ 1 & x_n \\ \end{bmatrix} \begin{bmatrix} 1 & -\bar{x} \\ 0 & 1\end{bmatrix} = \begin{bmatrix} 1 & x_1 - \bar{x} \\ ... & ... \\ 1 & x_n - \bar{x} \end{bmatrix}$
+
+$\therefore A^TX^TAX = \begin{bmatrix} 1 & ... & 1 \\ x_1 - \bar{x} & ... & x_n - \bar{x} \\ \end{bmatrix} \begin{bmatrix} 1 & x_1 - \bar{x} \\ ... & ... \\ 1 & x_n - \bar{x} \end{bmatrix} = \begin{bmatrix} n & \sum_{i=1}^n x_i-n\bar{x} \\ \sum_{i=1}^n x_i-n\bar{x} & \sum_{i=1}^n (x_i-\bar{x})^2\end{bmatrix} = \begin{bmatrix} n & 0 \\ 0 & \sum_{i=1}^n (x_i-\bar{x})^2\end{bmatrix}$
+
+We prove the components of $\hat{\beta^{'}}$ is uncorrelated.
+
+Because from part(c), we know $\hat{\beta^{'}} = A^{-1}\hat{\beta}$, so we also prove the components of $\hat{\beta}$ is uncorrelated.
+
+## (d)
+
+### (i)
+
+```{r}
+set.seed(12345)
+x = (1:100)/100
+y = rnorm(100,mean=1+5*x^2,sd=1)
+plot(x,y)
+```
+
+The model is $y = 5x^2 + \epsilon$, where $\epsilon$ ~ $N(1,1)$
+
+### (ii)
+
+```{r}
+fit1 = lm(y~poly(x,3,raw=T))
+fit2 = lm(y~poly(x,3,raw=F))
+```
+
+```{r}
+summary(fit1)
+```
+
+```{r}
+summary(fit2)
+```
+
+Because the p-values from F-tests on both models are smaller than 0.05, we can conclude that the fitted model is better than error only model at a significance level of 5%.
+
+### (iii)
+
+```{r}
+plot(y ~ x, pch = 20, cex = 0.6,
+    xlab = 'x',
+    ylab = 'y',
+    main = 'y = x + x^2 + x^3')
+
+pred1 = predict(fit1)
+pred2 = predict(fit2)
+points(x, pred1, pch = '|', cex = 0.8, col = 'blue')
+points(x, pred2, pch = '-', cex = 0.8, col = 'orange')
+
+legend('topleft',
+       legend = c('fit1','fit2'),
+       col = c('blue','orange'),
+       pch = c('|','-'),
+       bg = 'lightblue')
+```
+
+### (iv)
+
+Based on the summary report from `fit2`, $y_i$ is a second order polynomial in the predictor variable $x_i$
+
+Although all p-values from summary of `fit1` are large, that does not mean all predictors have no prediction power on the response variable. A proper interpretation is that at the presence of all predictors in the current model, none of them contribute significantly to the prediction.
+
+However, if we remove some predictors from the model, the p-value will change. See the change in p-value in the example below for removing the third order polynomial predictor from the model.
+
+```{r}
+summary(lm(y~poly(x,2,raw=T)))
+```
+
+# Question 4
+
+## (a)
+
+$\frac{\partial SSE[\beta]}{\partial \beta} = \frac{\partial}{\partial \beta} (y-X\beta)^T(y-X\beta) = \frac{\partial}{\partial \beta} (y^Ty - 2y^TX\beta + \beta^T\beta(X^TX)) = -2X^Ty + 2\beta(XX^T)$
+
+By setting $\frac{\partial SSE[\beta]}{\partial \beta}$ to zero, we obtain $\hat{\beta} = (X^TX)^{-1}X^Ty$
+
+## (b)
+
+$\frac{\partial}{\partial \beta}\Lambda = -2X^Ty + 2\beta(XX^T) - \lambda^TC$
+
+By setting $\frac{\partial}{\partial \beta} = 0$, we can obtain $\hat{\beta_c} = \frac{1}{2}(\lambda^TC)(XX^T)^{-1} + X^Ty(XX^T)^{-1}$
+
+Since we also have the constraint $C\beta - d = 0$, therefore by plugging in the previous result, we have
+
+<center>
+$d - [\frac{1}{2}(\lambda^TC)(XX^T)^{-1} + X^Ty(XX^T)^{-1}]\cdot C = 0$
+
+$d - C \cdot (X^Ty(XX^T)^{-1}) = C \cdot [\frac{1}{2}(\lambda^TC)(XX^T)^{-1}]$
+
+$\frac{1}{2}(\lambda^TC)(XX^T)^{-1} = \frac{d - C \cdot (X^Ty(XX^T)^{-1})}{C}$
+</center>
+
+Taking the result back into the function for $\hat{\beta_c}$, we now have 
+
+$\hat{\beta_c} = \frac{d - C \cdot (X^Ty(XX^T)^{-1})}{C} + X^Ty(XX^T)^{-1}$
+
+$\because \hat{\beta_u} = X^Ty(XX^T)^{-1}, C^{-1} = (X^TX)^{-1}C^T[C(X^TX)^{-1}C^T]^{-1}$
+
+$\therefore \hat{\beta_c} = \frac{d - C\hat{\beta_u}}{C} + \hat{\beta_u} = \hat{\beta_u} + C^{-1}(d - C\hat{\beta_u}) = \hat{\beta_u} + (X^TX)^{-1}C^T[C(X^TX)^{-1}C^T]^{-1}(d - C\hat{\beta_u})$
+
