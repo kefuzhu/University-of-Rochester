@@ -1,5 +1,6 @@
 """All the layer functions go here.
 
+# Signature: Kefu Zhu
 """
 
 from __future__ import print_function, absolute_import
@@ -77,9 +78,29 @@ class FullyConnected(object):
         """
 
         # TODO: write your implementation below
-        dv_x = np.empty(x.shape, dtype=np.float32)
-        dv_W = np.empty(self.W.shape, dtype=np.float32)
-        dv_b = np.empty(self.b.shape, dtype=np.float32)
+
+        # print('')
+        # print('x: {}'.format(x.shape))
+        # print('W: {}'.format(self.W.shape))
+        # print('b: {}'.format(self.b.shape))
+        # print('dv_y: {}'.format(dv_y.shape))
+        
+        # Compute dx(E)
+        dv_x = np.dot(dv_y.reshape(1,-1), self.W)
+        # Reshape to the original shape
+        dv_x = dv_x.reshape(x.shape)
+
+        # Compute dW(E)
+        dv_W = np.dot(dv_y.reshape(-1,1), x.reshape(-1,1).T)
+        # Reshape to the original shape
+        dv_W = dv_W.reshape(self.W.shape)
+
+        # Compute db(E)
+        dv_b = dv_y
+
+        # print('dv_x: {}'.format(dv_x.shape))
+        # print('dv_W: {}'.format(dv_W.shape))
+        # print('dv_b: {}'.format(dv_b.shape))
 
         # don't change the order of return values
         return dv_x, dv_W, dv_b
@@ -206,9 +227,59 @@ class Conv2D(object):
 
         # TODO: write your implementation below
 
-        dv_W = np.empty(self.W.shape, dtype=np.float32)
-        dv_b = np.empty(self.b.shape, dtype=np.float32)
-        dv_x = np.empty(x.shape, dtype=np.float32)
+        # Parameters
+        num_filters, in_channels, filter_height, filter_width = self.W.shape
+        out_channels, out_height, out_width = dv_y.shape
+
+
+        # Initialize outputs
+        dv_W = np.zeros(self.W.shape, dtype=np.float32)
+        dv_b = np.zeros(self.b.shape, dtype=np.float32)
+        dv_x = np.zeros(x.shape, dtype=np.float32)
+
+        # print('dv_y:{}'.format(dv_y.shape))
+        # print('x_padded:{}'.format(x_padded.shape))
+        # print('dv_W:{}'.format(dv_W.shape))
+        # print('dv_b:{}'.format(dv_b.shape))
+        # print('dv_x:{}'.format(dv_x.shape))
+
+        dv_x_padded = np.pad(dv_x, ((0, 0), (p[0], p[0]), (p[1], p[1])), mode='constant')
+
+        # Compute dv_W and dv_b
+        for k in range(out_channels):
+            for i in range(out_height):
+                for j in range(out_width):
+                    dv_y_l = dv_y[k,i,j]
+                    for t in range(in_channels):
+                        for m in range(filter_height):
+                            for n in range(filter_width):
+                                # Update the gradient for weight
+                                dv_W[k,t,m,n] += dv_y_l * x_padded[t, i*s[0]+m, j*s[1]+n]
+                    # Update the gradient for bias
+                    dv_b[k] += dv_y_l
+
+        # Compute dv_x
+        for t in range(in_channels):
+            for m in range(filter_height):
+                for n in range(filter_width):
+                    for k in range(out_channels):
+                        W_k = self.W[k,t,m,n]
+                        for i in range(out_height):
+                            for j in range(out_width):
+                                dv_y_l = dv_y[k,i,j]
+                                dv_x_padded[t, i*s[0]+m, j*s[1]+n] += dv_y_l * W_k
+
+        # Remove padded columns and rows
+        if p[0] == 0 and p[1] == 0:
+            dv_x = dv_x_padded
+        elif p[0] != 0 and p[1] == 0:
+            dv_x = dv_x_padded[:,p[0]:-p[0],:]
+        elif p[0] == 0 and p[1] != 0:
+            dv_x = dv_x_padded[:,:,p[1]:-p[-1]]
+        elif p[0] != 0 and p[1] != 0:
+            dv_x = dv_x_padded[:,p[0]:-p[0],p[1]:-p[-1]]
+
+
 
         # don't change the order of return values
         return dv_x, dv_W, dv_b
@@ -290,7 +361,42 @@ class MaxPool2D:
         )
 
         # TODO: write your implementation below
-        dv_x = np.empty(x.shape, dtype=np.float32)
+        dv_x = np.zeros(x.shape, dtype=np.float32)
+        dv_x_padded = np.pad(dv_x, ((0, 0), (p[0], p[0]), (p[1], p[1])), mode='constant')
+
+        # Parameters
+        out_channels, out_height, out_width = dv_y.shape
+        kernel_height, kernel_width = self.kernel_size
+
+        pooling = np.zeros(self.kernel_size)
+        for c in range(out_channels):
+            for i in range(out_height):
+                for j in range(out_width):
+                    dv_y_l = dv_y[c,i,j]
+                    # Compute the Max Pool
+                    for m in range(kernel_height):
+                        for n in range(kernel_width):
+                            m_stride = i*s[0] + m
+                            n_stride = j*s[1] + n
+                            pooling[m,n] = x_padded[c, m_stride, n_stride]
+                    # Get the index of max values
+                    is_max = (pooling == np.max(pooling))
+                    # Update
+                    for m in range(kernel_height):
+                        for n in range(kernel_width):
+                            m_stride = i*s[0] + m
+                            n_stride = j*s[1] + n
+                            dv_x_padded[c, m_stride, n_stride] += is_max[m,n] * dv_y_l
+
+        # Remove padded columns and rows
+        if p[0] == 0 and p[1] == 0:
+            dv_x = dv_x_padded
+        elif p[0] != 0 and p[1] == 0:
+            dv_x = dv_x_padded[:,p[0]:-p[0],:]
+        elif p[0] == 0 and p[1] != 0:
+            dv_x = dv_x_padded[:,:,p[1]:-p[-1]]
+        elif p[0] != 0 and p[1] != 0:
+            dv_x = dv_x_padded[:,p[0]:-p[0],p[1]:-p[-1]]
 
         return dv_x
 
