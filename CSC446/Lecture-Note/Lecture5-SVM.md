@@ -58,12 +58,9 @@ $
 
 Because $\xi_n \ge 0$ for any $n$, $\xi_n = \max\{0, 1 - y_n(W^TX^{(n)} + b)\}$ 
 
-The parameter $C$ is tuned by using development set, which is the primal optimization problem for SVM
+**Note**: The parameter $C$ is tuned by using development set, which is the primal optimization problem for SVM
 
-
-## SGD for SVM
-
-**Objective Function**
+Substitue $\xi_n$ in the objective function, we now have
 
 <center>
 $\min_{w,b} \frac{1}{2} ||w||^2 + C \cdot \sum_{n=1}^N \max\{0, 1 - y_n(W^TX^{(n)} + b)\}$
@@ -98,7 +95,7 @@ $\frac{f_n}{b} =
 $
 
 
-**SGD for SVM**
+## SGD for SVM
 
 ```
 Repeat
@@ -119,7 +116,7 @@ $
 \end{cases}
 $
 
-**Note**: The advantage of using log transformation in logistic regression
+**Note**: The advantage of using negative log transformation in logistic regression
 
 - Computational Efficiency
 	- Rather than compute the ratio of likelihood, we can compute the difference between the log likelihood 
