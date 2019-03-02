@@ -13,7 +13,7 @@ $\max_{w,b} M$
 such that
 $
 \begin{cases}
-y_n(w^TX^(n) + b) \ge M \\
+y_n(w^Tx^{(n)} + b) \ge M \\
 ||w|| = w^Tw = 1
 \end{cases}
 $
@@ -26,7 +26,7 @@ The original objective function can then be transformed into
 <center>
 $\min_{w',b} \frac{1}{2}||w'||^2$
 
-such that $y_n({w'}^T X^{(n)+b}) \ge 1$
+such that $y_n({w'}^T x^{(n)}+b) \ge 1$
 </center>
 
 <br>
