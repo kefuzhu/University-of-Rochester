@@ -60,7 +60,7 @@ where
 $\max_{a,b} f(a)g(a,b) = max_a[f(a)max_b(g(a,b))]$
 </center>
 
-So we can seperate the $\max$ into two parts
+So we can separate the $\max$ into two parts
 
 $\delta(t,i) = \max_{Z_{1:t-1}} P(Z_t = i, Z_{1:t-1}, X_{1:t})$
 
