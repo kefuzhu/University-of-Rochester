@@ -72,7 +72,7 @@ $\beta(t,i) = P(X_{t+1:T}|Z_t = i)$
 
 $\beta(T,i) = 1$
 
-**Dynamic Programming:** $t = T-1,T-2,...,1$
+**Dynamic Programming (Recursion):** $t = T-1,T-2,...,1$
 
 $\beta(t,i) = P(X_{t+1:T}|Z_t = i)$
 
@@ -106,7 +106,7 @@ where
 - $P(Z_1 = i)$ is known from the **initial distribution**
 - $P(X_1 | Z_1 = i)$ is known from the **emission probability**
 
-**Dynamic Programming:** $t = 2,3,...,T$
+**Dynamic Programming (Recursion)::** $t = 2,3,...,T$
 
 $\alpha(t,i) = P(Z_t = i,X_{1:t})$ 
 
