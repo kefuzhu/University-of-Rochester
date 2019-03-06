@@ -57,7 +57,7 @@ where
 **Remark**: If we have $f(a), g(a,b)$ that have the same sign $\forall a,b$, then
 
 <center>
-$\max_{a,b} f(a)g(a,b) = max_a[f(a)max_b(g(a,b))]$
+$\max_{a,b} f(a)g(a,b) = \max_a[f(a)\max_b(g(a,b))]$
 </center>
 
 So we can separate the $\max$ into two parts

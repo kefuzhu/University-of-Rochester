@@ -5,7 +5,8 @@
 - SVM Optimization
 - Kernel Methods
 
-## SVM Optimization
+## None-Linear Cases
+### Method 1: Soft-Margin SVM
 
 <center>
 $\min_{w,b} \frac{1}{2} ||w||^2 + C \cdot \sum_n \xi_n$
@@ -75,7 +76,7 @@ Points on the right side but not on the margin contribute nothing because alpha 
 
 For points on the wrong side (The red point), alpha equals to $C$, and $\xi_n > 0$ so they along with points on the margin contribute to the vector, but no point is allowed to contribute more than $C$
 
-## Kernel Methods
+### Method 2: Kernel
 
 Recall the classification formula
 

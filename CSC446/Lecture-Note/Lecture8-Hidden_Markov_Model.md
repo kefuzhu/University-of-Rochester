@@ -54,11 +54,24 @@ Define
 - $X = \{X_1,X_2,...,X_T\}$
 - $X_{i:j} = \{X_i, X_{i+1},...,X_j\}$
 
-**Objective**: Compute $P(Z_t|X)$, where
+**Objective**: 
 
 <center>
-$P(Z_t|X) \propto P(Z_t,X) = P(X_{t+1:T}|Z_t,X_{1:t})P(Z_t,X_{1:t}) = P(X_{t+1:T}|Z_t)P(Z_t,X_{1:t})$
-</center>T
+Compute $P(Z_t|X)$, where
+</center>
+
+$P(Z_t|X) \propto P(Z_t,X) = P(Z_t, X_{1:t}, X_{t+1:T})$ 
+
+$=  P(X_{t+1:T}|Z_t,X_{1:t})P(Z_t,X_{1:t})\ \ \ \ $  
+
+$= P(X_{t+1:T}|Z_t)P(Z_t,X_{1:t})\ \ \ \ $
+
+Then, we break the compute of $P(Z_t|X)$ into two parts
+
+- Backward: $P(X_{t+1:T}|Z_t)$
+- Forward: $P(Z_t,X_{1:t})$
+
+
 
 #### (1) Backward Algorithm
 
@@ -78,11 +91,13 @@ $\beta(t,i) = P(X_{t+1:T}|Z_t = i)$
 
 $= \sum_{j} P(X_{t+1:T}, Z_{t+1} = j|Z_t = i)$
 
+$= \sum_{j} P(X_{t+2:T}, X_{t+1}, Z_{t+1} = j|Z_t = i)$
+
 $= \sum_{j} P(X_{t+2:T}| Z_{t+1} = j, Z_t = i, X_{t+1}) P(X_{t+1}|Z_{t+1} = j, Z_t = i)P(Z_{t+1} = j|Z_t = i)$
 
 $= \sum_{j} P(X_{t+2:T}| Z_{t+1} = j) P(X_{t+1}|Z_{t+1} = j)P(Z_{t+1} = j|Z_t = i)$
 
-$= \beta(t+1,j) \cdot P(X_{t+1}|Z_{t+1} = j) \cdot P(Z_{t+1} = j|Z_t = i)$
+$= \sum_{j} \beta(t+1,j) \cdot P(X_{t+1}|Z_{t+1} = j) \cdot P(Z_{t+1} = j|Z_t = i)$
 
 where
 
@@ -111,6 +126,8 @@ where
 $\alpha(t,i) = P(Z_t = i,X_{1:t})$ 
 
 $= \sum_j P(Z_t = i,Z_{t-1} = j,X_{1:t})\ \ \ \ $ (Marginalization)
+
+$= \sum_j P(Z_t = i,Z_{t-1} = j,X_{1:t-1}, X_{t})$
 
 $= \sum_j P(X_t | Z_t = i, Z_{t-1} = j,X_{1:t-1}) P(Z_t = i|Z_{t-1} = j,X_{1:t-1})P(Z_{t-1} = j,X_{1:t-1})$
 
