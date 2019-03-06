@@ -68,6 +68,8 @@ $= [\delta^{(2)} \cdot w_1^{(2)}] \cdot g'(z_1^{(1)}) \cdot a_1^{(0)}$, where $\
 
 ### Sudo-code
 
+**Note**: $a$ and $z$ are flipped in the screenshot below (from lecture note)
+
 <center>
 <img src="graphs/backprop.png" style="max-width:80%">
 </center>

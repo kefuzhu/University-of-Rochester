@@ -94,7 +94,7 @@ Repeat until converge
 
 ⚠️ ⚠️ ⚠️
 
-- SGD makes update as scanning through each data point $f_n(w)$. However, GD computes the large sum $f(w)$ before making any update
+- SGD makes update as scanning through each data point $f_n(w)$ (After a shuffle of the entire dataset, which is what stochastic implies). However, GD computes the large sum $f(w)$ before making any update
 - GD is more accurate than SGD because some data points are bad so SGD might move in wrong direction sometimes. However, GD always moves in the direction of $-\nabla f(w)$
 
 **Note for learning rate $\alpha$**: 
