@@ -2,7 +2,9 @@
 title: "DSC 465, Homework 2"
 author: "Kefu Zhu"
 date: "02/08/2019"
-output: 
+output:
+  pdf_document:
+    toc: yes
   html_document:
     highlight: tango
     toc: yes
