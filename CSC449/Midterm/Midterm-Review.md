@@ -27,7 +27,7 @@ Linear filtering is filtering in which the value of an output pixel is a linear 
 
 <center>
 $H(u,v) = \frac{1}{2\pi\sigma^2}\exp(-\frac{u^2+v^2}{2\sigma^2})$
-![](graphs/gaussian-filter.png)
+<img src="graphs/gaussian-filter.png">
 </center>
 
 - Remove high-frequency components from the image (low-pass filter)
@@ -65,7 +65,7 @@ $H(u,v) = \frac{1}{2\pi\sigma^2}\exp(-\frac{u^2+v^2}{2\sigma^2}) = [\frac{1}{\si
 **(2) What causes an edge?**
 
 <center>
-![](graphs/edge-1.png)
+<img src="graphs/edge-1.png">
 </center>
 
 - Refelectance change: appearance information, texture
@@ -84,13 +84,13 @@ $\nabla f = [\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}]$
 Computing the derivative is the same as convolving the image with specific filters
 
 <center>
-![](graphs/edge-convolve.png)
+<img src="graphs/edge-convolve.png">
 </center>
 
 where the gradient points in the direction of most rapid increase in intensity, which is perpendicular to the direction of the edge.
 
 <center>
-![](graphs/image-gradient.png)
+<img src="graphs/image-gradient.png">
 </center>
 
 - The gradient direction is given by: $\theta = \tan^{-1}(\frac{\partial f}{\partial y}/\frac{\partial f}{\partial x})$
@@ -101,13 +101,13 @@ where the gradient points in the direction of most rapid increase in intensity, 
 If the image has noises, it is hard to detect the real edge by only computing the gradient of the image. 
 
 <center>
-![](graphs/edge-noise.png)
+<img src="graphs/edge-noise.png">
 </center>
 
 Therefore, we usually will perform smoothing on the image first and then take the gradient. The peak (maxima) of the $\frac{\partial}{\partial x}(h * f)$ corresponds to the edge. 
 
 <center>
-![](graphs/edge-smooth.png)
+<img src="graphs/edge-smooth.png">
 </center>
 
 **Derivative theorem of convolution**
@@ -121,21 +121,21 @@ $\frac{\partial}{\partial x}(h * f) = (\frac{\partial}{\partial x}h) * f$
 </center>
 
 <center>
-![](graphs/edge-derivative.png)
+<img src="graphs/edge-derivative.png">
 </center>
 
 In 2-D image, the derivative of gaussian filter is different (rotate 90 degree) for $\mathrm{x}$ and $\mathrm{y}$ direction
 
 <center>
-![](graphs/edge-gaussian-derivative.png)
+<img src="graphs/edge-gaussian-derivative.png">
 </center>
 
 Rather than finding the maxima in the first derivative gaussian operator, we consider finding the zero-crossing of the convolving result between second derivative of gaussian operator (**Laplacian of Gaussian operator $\nabla^2$**) and the image
 
 <center>
 $\nabla^2f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} $
-![](graphs/edge-gaussian.png)
-![](graphs/edge-laplacian.png)
+<img src="graphs/edge-gaussian.png">
+<img src="graphs/edge-laplacian.png">
 </center>
 
 
@@ -153,7 +153,7 @@ $\nabla^2f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^
 	$\rightarrow$ **Lose localization**: Detect edges are fatter than they suppose to be / lose edges very close to each other 
 	
 <center>
-![](graphs/edge-scale.png)
+<img src="graphs/edge-scale.png">
 </center>
 
 **Review: Smoothing vs. derivative filters**
