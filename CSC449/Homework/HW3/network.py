@@ -1,3 +1,5 @@
+# Signature: Kefu Zhu
+
 import torch.nn as nn
 import torch
 
@@ -49,9 +51,10 @@ class DCFNet(nn.Module):
         # TODO: You are required to calculate response using self.wf to do cross correlation on the searching patch z
         # put your code here
 
+        # Compute the Fourier Transform
         zf = torch.rfft(z, signal_ndim = 2)
-
         kzzf = torch.sum(complex_mulconj(zf, self.model_xf), dim=1, keepdim=True)
+        # # Compute the Inverse Fourier Transform
         response = torch.irfft(complex_mul(kzzf, self.model_alphaf), signal_ndim=3)
 
         return response
@@ -78,6 +81,7 @@ class DCFNet(nn.Module):
         # TODO: calculate self.xf and self.wf
         # put your code here
 
+        # Compute the Fourier Transform
         xf = torch.rfft(x, signal_ndim = 2)
 
         kxzf = torch.sum(torch.sum(xf ** 2, dim=4, keepdim=True), dim=1, keepdim=True)
