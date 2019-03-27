@@ -1,0 +1,479 @@
+---
+title: "DSC 465, Homework 3"
+author: "Kefu Zhu"
+date: "03/24/2019"
+output:
+  html_document:
+    highlight: tango
+    toc: yes
+---
+
+```{r message=FALSE, warning=FALSE}
+# Load library
+library(wooldridge)
+library(MASS)
+library(class)
+library(ROCR)
+library(randomForest)
+```
+
+
+# Question 1
+
+## (a)
+
+**Define**:
+
+- $A:$ abuse == 1
+- $B:$ mothalc == 1 and fathalc == 1
+- $C:$ mothalc == 0 and fathalc == 0
+
+Then we have 
+
+$OR(abuse == 1 | \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = OR(A|B,C) = \frac{P(A|B)/(1-P(A|B))}{P(A|C)/(1-P(A|C))}$
+
+We know
+
+$P(A|B)/(1-P(A|B)) = \frac{\exp(\beta_0 + \beta_1 + \beta_2)}{1 + \exp(\beta_0 + \beta_1 + \beta_2)} \cdot \frac{1 + \exp(\beta_0 + \beta_1 + \beta_2)}{1} = \exp(\beta_0 + \beta_1 + \beta_2)$
+
+Similarly
+
+$P(A|C)/(1-P(A|C)) = \frac{\exp(\beta_0)}{1 + \exp(\beta_0)} \cdot \frac{1 + \exp(\beta_0)}{1} = \exp(\beta_0)$
+
+$\therefore OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = \frac{\exp(\beta_0 + \beta_1 + \beta_2)}{\exp(\beta_0)} = \exp(\beta_1 + \beta_2)$
+
+We also know that
+
+- $OR(\mathrm{abuse} == 1\ |\ \mathrm{mothalc} == 1) = \exp(\beta_1)$
+- $OR(\mathrm{abuse} == 1\ |\ \mathrm{fathalc} == 1) = \exp(\beta_2)$
+
+$\because \exp(\beta_1 + \beta_2) = \exp(\beta_1) \times \exp(\beta_2)$
+
+$\therefore OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = OR(\mathrm{abuse} == 1\ |\ \mathrm{mothalc} == 1) \times OR(\mathrm{abuse} == 1\ |\ \mathrm{fathalc} == 1)$
+
+## (b)
+
+We know 
+
+<center>
+$OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{or}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63}$
+</center>
+<br>
+which is equivalent to
+
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 0\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63}$
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63}$
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63}$
+
+Similar to the computation in part (a), we can derive that 
+
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 0\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63} \Rightarrow \exp(\beta_1) = e^{0.63}$
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63} \Rightarrow \exp(\beta_2) = e^{0.63}$
+- $OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fathalc} == 1\}; \{\mathrm{mothalc} == 0\ \mathrm{and}\ \mathrm{fathalc} == 0\}) = e^{0.63} \Rightarrow \exp(\beta_1 + \beta_2 + \beta_3) = e^{0.63}$
+
+To summarize, we have
+$\begin{cases}
+\beta_1 = 0.63 \\
+\beta_2 = 0.63 \\
+\beta_1 + \beta_2 + \beta_3 = 0.63
+\end{cases} 
+\Rightarrow
+\begin{cases}
+\beta_1 = 0.63 \\
+\beta_2 = 0.63 \\
+\beta_3 = -0.63
+\end{cases}$
+
+
+
+## (c)
+```{r}
+model_1 = glm(abuse ~ mothalc + fathalc, family = 'binomial', data = alcohol)
+summary(model_1)
+```
+
+```{r}
+model_3 = glm(abuse ~ mothalc * fathalc, family = 'binomial', data = alcohol)
+summary(model_3)
+```
+
+### (i)
+
+```{r message=FALSE, warning=FALSE}
+odds_ratio = exp(cbind(coef(model_1), confint(model_1))[-1,])
+odds_ratio
+```
+
+**Answer**:
+
+For model (1), the odds ratio
+
+- **OR(abuse == 1 | mothalc == 1)** is `r odds_ratio[1,1]` with 95% confidence interval, (`r odds_ratio[1,2]`, `r odds_ratio[1,3]`)
+- **OR(abuse == 1 | fathalc == 1)** is `r odds_ratio[2,1]` with 95% confidence interval, (`r odds_ratio[2,2]`, `r odds_ratio[2,3]`)
+
+### (ii)
+```{r message=FALSE, warning=FALSE}
+confint(model_3)
+```
+
+**Answer**: 
+
+Since the 95% confidence interval of $\beta_3$ does contain zero, there isn't strong evidence of $\beta_3 \ne 0$ in model (3). 
+
+The conclusion is consistent with equation (2) which states that odds ratio, $OR(\mathrm{abuse} == 1\ |\ \mathrm{mothalc} == 1)$, does not depend on the value of `fathalc`
+
+
+
+# Question 2
+## (a)
+
+**Define**:
+
+<center>
+$\begin{cases} P_A[i]\ is\ the\ ith\ element\ in\ vector\ P_A \\ P_F[j]\ is\ the\ jth\ element\ in\ vector\ P_F \end{cases}$
+</center>
+<br>
+
+For equation $Odds(\mathrm{Document\ is\ Authentic}\ |\ X) = LR \times Odds(\mathrm{Document\ is\ Authentic})$
+
+$\because LR = \frac{P(X\ |\ \mathrm{Document\ is\ Authentic})}{P(X\ |\ \mathrm{Document\ is\ Forged})} = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^{n_1}(P_F[2])^{n_5}(P_F[3])^{n_9}} = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n}$
+
+$\because Odds(\mathrm{Document\ is\ Authentic}) = \pi_A$
+
+$\therefore Odds(\mathrm{Document\ is\ Authentic}\ |\ X) = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n} \cdot \pi_A$
+
+## (b)
+
+To predict an accounting document is authentic, we must have $Odds(\mathrm{Document\ is\ Authentic}\ |\ X) \ge 1$
+
+$\therefore$ 
+
+<center>
+$\frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n} \cdot \pi_A \ge 1$
+
+$(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9} \cdot \pi_A \ge (P_F[1])^n$
+
+$n_1log(P_A[1]) + n_5log(P_A[2]) + n_9log(P_A[3]) + log(\pi_A) \ge nlog(P_F[1])$
+
+$n_1log(P_A[1]) + n_5log(P_A[2]) + n_9log(P_A[3]) + log(\pi_A) - nlog(P_F[1]) \ge 0$
+</center>
+<br>
+
+If we denote this formula as $a \times n_1 + b \times n_5 + c \times n_9 + d \ge 0$, then
+
+- $a = log(P_A[1])$
+- $b = log(P_A[2])$
+- $c = log(P_A[3])$
+- $d = log(\pi_A) - nlog(P_F[1])$
+
+## (c)
+
+**Define**
+
+- $A$: The document is authentic
+- $F$: The document is forged
+- $x \in \{1,5,9\}$
+
+We know the posterior probability is calculated as
+
+<center>
+$P(F|x) = \frac{P(x|F)P(F)}{P(x|F)P(F) + P(x|A)P(A)} \cdot P(F)$
+</center>
+<br>
+
+where $P(F|X)$ is the **posterior probability**, $\frac{P(x|F)P(F)}{P(x|F)P(F) + P(x|A)P(A)}$ is the **likelihood**, $P(F)$ is the prior
+
+To compute the posterior probability that the document is forged given oberved frequencies $X = (n_1, n_5, n_9)$ of the leading digits that are '$1$', '$5$' or '$9$', we calculate
+
+<center>
+$P(F|X) = P(F|x = 1)^{n_1} \times P(F|x = 5)^{n_5} \times P(F|x = 9)^{n_9}$
+</center>
+```{r}
+P_A = c(0.3/(0.3 + 0.071 + 0.046),0.071/(0.3 + 0.071 + 0.046),0.046/(0.3 + 0.071 + 0.046))
+P_F = c(1/3,1/3,1/3)
+n1 = 7
+n5 = 5
+n9 = 8
+prior = 1/2
+
+likelihood = function(index, P_F, prior){
+  return((P_F[index])/(P_A[index]*prior + P_F[index]*(1-prior)))
+}
+
+posterior = (likelihood(1,P_F,prior) * prior)^n1 *
+            (likelihood(2,P_F,prior) * prior)^n5 *
+            (likelihood(3,P_F,prior) * prior)^n9
+
+posterior
+```
+
+**Answer**:
+
+Given evidence $X$, the posterior probability that the document is forged is `r posterior`
+
+# Question 3
+
+## (a)
+```{r}
+# Combine the dataset
+Pima.all = rbind(Pima.tr, Pima.te)
+```
+
+### npreg vs. type
+```{r}
+wilcox.test(npreg ~ type, data = Pima.all)
+```
+
+### glu vs. type
+```{r}
+wilcox.test(glu ~ type, data = Pima.all)
+```
+
+### bp vs. type
+```{r}
+wilcox.test(bp ~ type, data = Pima.all)
+```
+
+### skin vs. type
+```{r}
+wilcox.test(skin ~ type, data = Pima.all)
+```
+
+### bmi vs. type
+```{r}
+wilcox.test(bmi ~ type, data = Pima.all)
+```
+
+### ped vs. type
+```{r}
+wilcox.test(ped ~ type, data = Pima.all)
+```
+
+### age vs. type
+```{r}
+wilcox.test(age ~ type, data = Pima.all)
+```
+
+**Answer**: 
+
+The p-values for each Wilcoxon rank sum test are summarized below:
+
+- `npreg vs. type`: `r wilcox.test(npreg ~ type, data = Pima.all)$p.value`
+- `glu vs. type`: `r wilcox.test(glu ~ type, data = Pima.all)$p.value`
+- `bp vs. type`: `r wilcox.test(bp ~ type, data = Pima.all)$p.value`
+- `skin vs. type`: `r wilcox.test(skin ~ type, data = Pima.all)$p.value`
+- `bmi vs. type`: `r wilcox.test(bmi ~ type, data = Pima.all)$p.value`
+- `ped vs. type`: `r wilcox.test(ped ~ type, data = Pima.all)$p.value`
+- `age vs. type`: `r wilcox.test(age ~ type, data = Pima.all)$p.value`
+
+Since all p-vlaues are smaller than 0.05, which indicates that the distribution of every feature differs significantly between diabetes groups (positive/negative).
+
+Hence, it is recommended to build the model using all seven features
+
+## (b)
+```{r}
+# Preparation before log transformation: Make a copy of Pima.all
+log_Pima.all = Pima.all
+# Add one to npreg to avoid evalutaion of log(0)
+log_Pima.all$npreg = log_Pima.all$npreg + 1 
+# Standardize the first seven features using log transformation (exclude the 8 column, response)
+log_Pima.all[,-8] = log(log_Pima.all[,-8])
+```
+
+## (c)
+```{r}
+evaluation = function(confusion_matrix){
+  # Classification error
+  CE = (confusion_matrix[1,2] + confusion_matrix[2,1])/sum(confusion_matrix)
+  # Sensitivity
+  sens = (confusion_matrix[2,2])/sum(confusion_matrix[,2])
+  # Specificity
+  spec = (confusion_matrix[1,1])/sum(confusion_matrix[,1])
+  
+  eval = c(CE,sens,spec)
+  names(eval) = c('CE','sens','spec')
+  return(eval)
+}
+```
+
+## (d)
+```{r}
+LDA.fit = lda(type ~ ., data = log_Pima.all, CV = TRUE)
+QDA.fit = qda(type ~ ., data = log_Pima.all, CV = TRUE)
+```
+
+```{r}
+# Initialize the best classification error to 1
+best_CE = 1
+KNN.fit = NULL
+# Experiment KNN using different values of k (1,3,5,...,35)
+for(i in seq(1,35,2)){
+  # Fit the KNN model
+  knn.fit = knn.cv(train = log_Pima.all[,-8], cl = log_Pima.all$type, k = i)
+  # Compute the CE (classification error)
+  CE = evaluation(table(knn.fit, log_Pima.all$type))[1]
+  # Record the best model based on value of CE
+  if(CE < best_CE){
+    best_CE = CE
+    KNN.fit = knn.fit
+  }
+}
+```
+
+
+### (i)
+
+**Answer**:
+
+All of them are using Leave-one-out cross validation
+
+### (ii)
+
+#### LDA
+```{r}
+LDA_eval = evaluation(table(LDA.fit$class, log_Pima.all$type))
+LDA_eval
+```
+
+#### QDA
+```{r}
+QDA_eval = evaluation(table(QDA.fit$class, log_Pima.all$type))
+QDA_eval
+```
+
+#### KNN
+```{r}
+KNN_eval = evaluation(table(KNN.fit, log_Pima.all$type))
+KNN_eval
+```
+
+**Answer**:
+
+No. There isn't one classifier that outperforms the rest with respect to all summary statistics (CE, sens, spec)
+
+## (e)
+### (i)
+```{r}
+LR.fit = glm(type ~ ., family = 'binomial', data = log_Pima.all)
+```
+
+### (ii)
+```{r, fig.align='center'}
+LR.p = predict(LR.fit, log_Pima.all, type = 'response')
+LR.pred = prediction(LR.p, log_Pima.all$type)
+LR.perf = performance(LR.pred, 'tpr','fpr')
+plot(LR.perf, main = 'ROC curve of Logistic Regression')
+```
+
+### (iii)
+```{r, fig.align='center'}
+plot(LR.perf, main = 'ROC curve of Logistic Regression')
+points(1-LDA_eval[3],LDA_eval[2],col='red',pch=17) 
+points(1-QDA_eval[3],LDA_eval[2],col='blue',pch=18) 
+points(1-KNN_eval[3],LDA_eval[2],col='orange',pch=20) 
+legend('topleft',
+        legend = c("LDA", "QDA", 'KNN'),
+        col = c('red', 'blue', 'orange'),
+        pch = c(17,18,20),
+        cex = 0.8)
+```
+
+**Answer**:
+
+When classifiers give very different balances between sensitivity and specificity, we look at the area under curve (AUC). The model with higher AUC has better performance. 
+
+### (iv)
+```{r}
+# Initialize the empty vector to store sensitivity and specificity
+LDA_sens = c()
+LDA_spec = c()
+QDA_sens = c()
+QDA_spec = c()
+# Experiment LDA and QDA using different prior probability (0,0.01,0.02,...,1)
+for(p in seq(0,1,0.01)){
+  # Fit the LDA model
+  lda.fit = lda(type ~ ., data = log_Pima.all, prior = c(1-p,p), CV = TRUE)
+  # Fit the QDA model
+  qda.fit = qda(type ~ ., data = log_Pima.all, prior = c(1-p,p), CV = TRUE)
+  # Compute the sensitivity for LDA and add it into the vector
+  LDA_sens = c(LDA_sens, evaluation(table(lda.fit$class, log_Pima.all$type))[2]) 
+  # Compute the sensitivity for LDA and add it into the vector
+  LDA_spec = c(LDA_spec, evaluation(table(lda.fit$class, log_Pima.all$type))[3]) 
+  # Compute the sensitivity for LDA and add it into the vector
+  QDA_sens = c(QDA_sens, evaluation(table(qda.fit$class, log_Pima.all$type))[2]) 
+  # Compute the sensitivity for LDA and add it into the vector
+  QDA_spec = c(QDA_spec, evaluation(table(qda.fit$class, log_Pima.all$type))[3]) 
+}
+```
+
+```{r, fig.align='center'}
+# ROC curve of Logistic Regression
+plot(LR.perf, main = 'ROC curve')
+# Add ROC curve of LDA
+lines(cbind(1-LDA_spec,LDA_sens), col = 'red', lty = 5)
+# Add ROC curve of QDA
+lines(cbind(1-QDA_spec,QDA_sens), col = 'blue', lty = 3)
+legend('topleft',
+        legend = c("Logistic Regression","LDA", "QDA"),
+        col = c('black','red', 'blue'),
+        lty = c(1,5,3),
+        cex = 0.6)
+```
+
+**Answer**:
+
+From the ROC curves, LDA is more preferable than QDA since its ROC curve is above that of QDA, which means LDA has higher AUC (Area Undr Curve) value.
+
+# Question 4
+## (a)
+```{r}
+RF.fit = randomForest(type ~ ., data=log_Pima.all)
+RF.p = predict(RF.fit, type='prob')
+RF.pred = prediction(RF.p[,2], log_Pima.all$type)
+RF.perf = performance(RF.pred, 'tpr','fpr')
+```
+
+## (b)
+```{r, fig.align='center'}
+# ROC curve of Logistic Regression
+plot(LR.perf, main = 'ROC curve')
+# Add ROC curve of LDA
+lines(cbind(1-LDA_spec,LDA_sens), col = 'red', lty = 5)
+# Add ROC curve of QDA
+lines(cbind(1-QDA_spec,QDA_sens), col = 'blue', lty = 3)
+# Add ROC curve of Random Forest
+lines(cbind(unlist(RF.perf@x.values), unlist(RF.perf@y.values)), col = 'violet', lty = 4)
+legend('topleft',
+        legend = c("Logistic Regression","LDA", "QDA", "Random Forest"),
+        col = c('black','red', 'blue', 'violet'),
+        lty = c(1,5,3,4),
+        cex = 0.6)
+```
+
+**Answer**:
+
+Based on the ROC curve, LDA still seems to outperforms the other models (QDA and RandomForest). And the random forest model does not seem to offer any advantage in this case. 
+
+We can also check their exact AUC score from below
+
+```{r}
+# Extract the posterior probability for type == 'Yes' for LDA and QDA
+LDA.pred = prediction(LDA.fit$posterior[,2], log_Pima.all$type)
+QDA.pred = prediction(QDA.fit$posterior[,2], log_Pima.all$type)
+# LR.pred = prediction(predict(LR.fit, log_Pima.all, type = 'response'), log_Pima.all$type)
+# Compute the AUC score for Logistic Regression, LDA, QDA and RandomForest
+# LR.auc = unlist(performance(LR.pred, measure = 'auc')@y.values)
+RF.auc = unlist(performance(RF.pred, measure = 'auc')@y.values)
+LDA.auc = unlist(performance(LDA.pred, measure = 'auc')@y.values)
+QDA.auc = unlist(performance(QDA.pred, measure = 'auc')@y.values)
+
+# auc_list = c(LR.auc, LDA.auc, QDA.auc, RF.auc)
+# names(auc_list) = c('LR','LDA','QDA','RandomForest')
+
+auc_list = c(LDA.auc, QDA.auc, RF.auc)
+names(auc_list) = c('LDA','QDA','RandomForest')
+
+auc_list
+```
+
+
