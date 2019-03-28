@@ -6,6 +6,10 @@ output:
   html_document:
     highlight: tango
     toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
 ---
 
 ```{r message=FALSE, warning=FALSE}
@@ -44,8 +48,8 @@ $\therefore OR(abuse == 1\ |\ \{\mathrm{mothalc} == 1\ \mathrm{and}\ \mathrm{fat
 
 We also know that
 
-- $OR(\mathrm{abuse} == 1\ |\ \mathrm{mothalc} == 1) = \exp(\beta_1)$
-- $OR(\mathrm{abuse} == 1\ |\ \mathrm{fathalc} == 1) = \exp(\beta_2)$
+- $OR(\mathrm{abuse} == 1\ |\ \mathrm{mothalc} == 1) = \frac{\exp(\beta_0 + \beta_1 + \beta_2X_2)}{\exp(\beta_0 + \beta_2X_2)} = \exp(\beta_1)$
+- $OR(\mathrm{abuse} == 1\ |\ \mathrm{fathalc} == 1) = \frac{\exp(\beta_0 + \beta_1X_1 + \beta_2)}{\exp(\beta_0 + \beta_1X_1)} = \exp(\beta_2)$
 
 $\because \exp(\beta_1 + \beta_2) = \exp(\beta_1) \times \exp(\beta_2)$
 
@@ -138,9 +142,9 @@ For equation $Odds(\mathrm{Document\ is\ Authentic}\ |\ X) = LR \times Odds(\mat
 
 $\because LR = \frac{P(X\ |\ \mathrm{Document\ is\ Authentic})}{P(X\ |\ \mathrm{Document\ is\ Forged})} = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^{n_1}(P_F[2])^{n_5}(P_F[3])^{n_9}} = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n}$
 
-$\because Odds(\mathrm{Document\ is\ Authentic}) = \pi_A$
+$\because Odds(\mathrm{Document\ is\ Authentic}) = \frac{\pi_A}{1-\pi_A}$
 
-$\therefore Odds(\mathrm{Document\ is\ Authentic}\ |\ X) = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n} \cdot \pi_A$
+$\therefore Odds(\mathrm{Document\ is\ Authentic}\ |\ X) = \frac{(P_A[1])^{n_1}(P_A[2])^{n_5}(P_A[3])^{n_9}}{(P_F[1])^n} \cdot \frac{\pi_A}{1-\pi_A}$
 
 ## (b)
 
@@ -172,40 +176,47 @@ If we denote this formula as $a \times n_1 + b \times n_5 + c \times n_9 + d \ge
 
 - $A$: The document is authentic
 - $F$: The document is forged
-- $x \in \{1,5,9\}$
+- $X$: Observed frequencies $X = (n_1, n_5, n_9)$ of the leading digits that are '$1$', '$5$' or '$9$'
 
 We know the posterior probability is calculated as
 
 <center>
-$P(F|x) = \frac{P(x|F)P(F)}{P(x|F)P(F) + P(x|A)P(A)} \cdot P(F)$
+$P(F|X) = \frac{P(X|F)}{P(X|F)P(F) + P(X|A)P(A)} \cdot P(F)$
 </center>
 <br>
 
-where $P(F|X)$ is the **posterior probability**, $\frac{P(x|F)P(F)}{P(x|F)P(F) + P(x|A)P(A)}$ is the **likelihood**, $P(F)$ is the prior
+where $P(F|X)$ is the **posterior probability**, $\frac{P(X|F)}{P(X|F)P(F) + P(X|A)P(A)}$ is the **likelihood**, $P(F)$ is the prior
 
-To compute the posterior probability that the document is forged given oberved frequencies $X = (n_1, n_5, n_9)$ of the leading digits that are '$1$', '$5$' or '$9$', we calculate
-
-<center>
-$P(F|X) = P(F|x = 1)^{n_1} \times P(F|x = 5)^{n_5} \times P(F|x = 9)^{n_9}$
-</center>
 ```{r}
+# Parameters
 P_A = c(0.3/(0.3 + 0.071 + 0.046),0.071/(0.3 + 0.071 + 0.046),0.046/(0.3 + 0.071 + 0.046))
 P_F = c(1/3,1/3,1/3)
 n1 = 7
 n5 = 5
 n9 = 8
 prior = 1/2
+```
 
-likelihood = function(index, P_F, prior){
-  return((P_F[index])/(P_A[index]*prior + P_F[index]*(1-prior)))
-}
+```{r}
+X_F = choose(20, 7) * choose(13, 5) * (P_F[1]) ^ 20
+X_F
+```
 
-posterior = (likelihood(1,P_F,prior) * prior)^n1 *
-            (likelihood(2,P_F,prior) * prior)^n5 *
-            (likelihood(3,P_F,prior) * prior)^n9
+$P(X|F) = {20 \choose 7}(\frac{1}{3})^7 \cdot {13 \choose 5}(\frac{1}{3})^5 \cdot {8 \choose 8}(\frac{1}{3})^8 = {20 \choose 7}{13 \choose 5}(\frac{1}{3})^{20} =$ `r X_F`
 
+```{r}
+X_A = choose(20, 7) * (P_A[1] ^ n1) * choose(13, 5) * (P_A[2] ^ n5) * 1 * (P_A[3] ^ n9)
+X_A
+```
+
+$P(X|A) = {20 \choose 7}(P_A[1])^{n_1} \cdot {13 \choose 5}(P_A[2])^{n_5} \cdot {8 \choose 8}(P_A[3])^{n_5} =$ `r X_A`
+
+```{r}
+posterior = (X_F)/(X_F * prior + X_A * (1-prior)) * prior
 posterior
 ```
+
+Therefore, $P(F|X) = \frac{P(X|F)}{P(X|F)P(F) + P(X|A)P(A)} \cdot P(F) =$ `r posterior`
 
 **Answer**:
 
@@ -305,6 +316,7 @@ QDA.fit = qda(type ~ ., data = log_Pima.all, CV = TRUE)
 ```{r}
 # Initialize the best classification error to 1
 best_CE = 1
+best_K = -999
 KNN.fit = NULL
 # Experiment KNN using different values of k (1,3,5,...,35)
 for(i in seq(1,35,2)){
@@ -315,11 +327,13 @@ for(i in seq(1,35,2)){
   # Record the best model based on value of CE
   if(CE < best_CE){
     best_CE = CE
+    best_K = i
     KNN.fit = knn.fit
   }
 }
 ```
 
+**Note**: When $K =$ `r best_K`, KNN produces the smallest classification error
 
 ### (i)
 
@@ -369,8 +383,8 @@ plot(LR.perf, main = 'ROC curve of Logistic Regression')
 ```{r, fig.align='center'}
 plot(LR.perf, main = 'ROC curve of Logistic Regression')
 points(1-LDA_eval[3],LDA_eval[2],col='red',pch=17) 
-points(1-QDA_eval[3],LDA_eval[2],col='blue',pch=18) 
-points(1-KNN_eval[3],LDA_eval[2],col='orange',pch=20) 
+points(1-QDA_eval[3],QDA_eval[2],col='blue',pch=18) 
+points(1-KNN_eval[3],KNN_eval[2],col='orange',pch=20) 
 legend('topleft',
         legend = c("LDA", "QDA", 'KNN'),
         col = c('red', 'blue', 'orange'),
@@ -397,11 +411,11 @@ for(p in seq(0,1,0.01)){
   qda.fit = qda(type ~ ., data = log_Pima.all, prior = c(1-p,p), CV = TRUE)
   # Compute the sensitivity for LDA and add it into the vector
   LDA_sens = c(LDA_sens, evaluation(table(lda.fit$class, log_Pima.all$type))[2]) 
-  # Compute the sensitivity for LDA and add it into the vector
+  # Compute the specificity for LDA and add it into the vector
   LDA_spec = c(LDA_spec, evaluation(table(lda.fit$class, log_Pima.all$type))[3]) 
-  # Compute the sensitivity for LDA and add it into the vector
+  # Compute the sensitivity for QDA and add it into the vector
   QDA_sens = c(QDA_sens, evaluation(table(qda.fit$class, log_Pima.all$type))[2]) 
-  # Compute the sensitivity for LDA and add it into the vector
+  # Compute the specificity for QDA and add it into the vector
   QDA_spec = c(QDA_spec, evaluation(table(qda.fit$class, log_Pima.all$type))[3]) 
 }
 ```
@@ -442,10 +456,10 @@ lines(cbind(1-LDA_spec,LDA_sens), col = 'red', lty = 5)
 # Add ROC curve of QDA
 lines(cbind(1-QDA_spec,QDA_sens), col = 'blue', lty = 3)
 # Add ROC curve of Random Forest
-lines(cbind(unlist(RF.perf@x.values), unlist(RF.perf@y.values)), col = 'violet', lty = 4)
+lines(cbind(unlist(RF.perf@x.values), unlist(RF.perf@y.values)), col = 'green3', lty = 4)
 legend('topleft',
         legend = c("Logistic Regression","LDA", "QDA", "Random Forest"),
-        col = c('black','red', 'blue', 'violet'),
+        col = c('black','red', 'blue', 'green3'),
         lty = c(1,5,3,4),
         cex = 0.6)
 ```
