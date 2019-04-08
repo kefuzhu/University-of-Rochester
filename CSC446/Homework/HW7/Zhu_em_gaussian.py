@@ -107,21 +107,22 @@ def train_model(model, train_xs, dev_xs, args):
 
         # Maximization
         for k in range(K):
-            # Update mu
-            mus[k] = np.dot(ksi_matrix[:,k],train_xs)/np.sum(ksi_matrix[:,k])
-            
-            # Initialize for next step
-            zero_mean = train_xs - mus[k]
+
             sum_ksi = np.sum(ksi_matrix[:,k])
 
+            # Update mu
+            mus[k] = np.dot(ksi_matrix[:,k],train_xs)/sum_ksi
             # Update lambda
             lambdas[k] = sum_ksi/num_data
 
+            # Compute the the distance between data point and the cluster center
+            deviation = train_xs - mus[k] 
+
             # Update sigma
             if args.tied:
-                sigmas += np.dot(np.transpose(zero_mean)*ksi_matrix[:,k],zero_mean)
+                sigmas += sum_ksi * np.dot(np.transpose(deviation),deviation)
             else:
-                sigmas[k] = np.dot(np.transpose(zero_mean)*ksi_matrix[:,k],zero_mean)/sum_ksi   
+                sigmas[k] = np.dot(ksi_matrix[:,k] * np.transpose(deviation),deviation)/sum_ksi  
 
         # If the covariance matrix is the same
         if args.tied:
@@ -168,7 +169,7 @@ def average_log_likelihood(model, data, args):
     num_data = data.shape[0]
 
 
-    # ll = sum over z, p(X|Z = z, theta) *P(Z=z|theta)
+    # Likelihood = P(X|Z=z) for all z = sum over z, P(X|Z=z) * P(Z=z)
     l_matrix = np.zeros((num_data,K))
 
     for k in range(K):
