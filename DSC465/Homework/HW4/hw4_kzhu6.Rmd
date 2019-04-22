@@ -1,0 +1,579 @@
+---
+title: "DSC 465, Homework 4"
+author: "Kefu Zhu"
+date: "04/17/2019"
+output:
+  html_document:
+    highlight: tango
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r message=FALSE, warning=FALSE}
+# Load library
+library(stats)
+library(MASS)
+library(partitionComparison)
+library(latex2exp)
+# Seed number for this assignment
+my_seed = 007 # :o
+```
+
+# Question 1
+```{r}
+gem = read.table(file='GSE364n50.csv',sep=',',row.names=1,header=F)
+```
+
+## (a)
+### (i)
+```{r}
+# Create the label vector
+class = c(rep('positive',30),rep('negative',20))
+# Perform the PCA on original dataset
+PCA_components = prcomp(gem, center = TRUE, scale = FALSE)$x
+# Construct a QDA classifier 
+fit.qda = qda(PCA_components[,1:4], grouping = class, prior = c(0.5,0.5), CV = TRUE)
+```
+
+```{r}
+# Original class proportion
+table(class)/length(class)
+```
+
+**Answer**: 
+
+If the prior probabilities are not specified, the original class proportion will be used, which is `(0.4,0.6)` in this case.
+
+### (ii)
+```{r}
+# Obtain the posterior probability for positive class
+pred = fit.qda$posterior[,'positive']
+# Convert the probability to TRUE/FALSE vector (class == 'positive')
+pred = pred > 0.5
+# TRUE/FALSE vector for ground truth
+truth = class == 'positive'
+# TRUE/FALSE vector for correctly classified data
+pred_correct = pred == truth
+# Obtain the maximum posterior probability for each data point
+p_max = apply(fit.qda$posterior, 1, max) # 1 means obtaining the maximum number by row
+```
+
+```{r}
+# Classification result for observations with p_max >= 0.75
+pred_upper_25 = pred_correct[p_max >= 0.75]
+# Correct classification rate
+sum(pred_upper_25)/length(pred_upper_25)
+```
+
+```{r}
+# Classification result for observations with p_max < 0.75
+pred_lower_75 = pred_correct[p_max < 0.75]
+# Correct classification rate
+sum(pred_lower_75)/length(pred_lower_75)
+```
+
+```{r}
+# p_max for correctly classified observations
+pred_correct_posterior = p_max[pred_correct]
+# p_max for wrongly classified observations
+pred_wrong_posterior = p_max[!pred_correct]
+# Wilcoxon rank-sum test
+wilcox.test(pred_correct_posterior, pred_wrong_posterior)
+```
+
+**Answer**:
+
+- **What is the correct classification rate for observations with $p_{max} \ge 0.75$?**
+
+  Correct classification rate = `r sum(pred_upper_25)/length(pred_upper_25)`
+
+- **What is the correct classification rate for observations with $p_{max} < 0.75$?**
+
+  Correct classification rate = `r sum(pred_lower_75)/length(pred_lower_75)`
+  
+- **Wilcoxon rank sum test**
+
+  Because p-value from the test is `r wilcox.test(pred_correct_posterior, pred_wrong_posterior)$p.value`, which is smaller than $0.05$, we conclude that there is a statistically significant difference in the distribution of $p_max$ between observations that were correctly classified and those that weren't.
+  
+### (iii)
+```{r, fig.align='center'}
+# Create the color vector
+#   Black: -ve (non-metastatic)
+#   Red: +ve (metastatic)
+col_index = as.numeric(truth) + 1
+col_vector = c('black','red')[col_index]
+# Create the pch vector
+#   o: Incorrectly classified (pch = 1)
+#   +: Correctly classified (pch = 3)
+pch_index = as.numeric(pred_correct) + 1
+pch_vector = c(1,3)[pch_index]
+# Pairwise scatterplots of first four PCA components
+pairs(PCA_components[,1:4], col = col_vector, pch = pch_vector)
+```
+
+**Answer**:
+
+- Correctly classified observations are quite spread out in each scatterplot, which means the values of principal components varies quite uniformly for these obverstaions.
+
+- Incorrectly classified observations tend to have
+  - low values on `PC1`
+  - high values on `PC2` and `PC3`
+  
+## (b)
+
+### Method 1
+
+```{r}
+# Initialize empty vector to store CE value for method 1
+CE_1 = c()
+# Start time
+start = Sys.time()
+# Fit qda model with different number of PCA components
+for(K in seq(1,18)){
+  # When K = 1, the object is not a matrix, force it XD
+  if(K == 1){
+    tmp.qda = qda(matrix(PCA_components[,1:K]), grouping = class)
+  } else{
+    tmp.qda = qda(PCA_components[,1:K], grouping = class)
+  }
+  # Prediction by LOOCV
+  pred = predict(tmp.qda, method = 'looCV')$class
+  # Convert prediction to TRUE/FALSE vector
+  pred_bool = pred == 'positive'
+  # Compute the classifcation error rate and append it to the vector
+  CE_1 = c(CE_1, sum(pred_bool != truth)/length(truth))
+}
+```
+
+### Method 2
+```{r warning=FALSE}
+# Initialize empty vector to store CE value for method 2
+CE_2 = c()
+# Fit qda model with different number of PCA components
+for(K in seq(1,18)){
+  # Initialize the counter for the correct prediction
+  running_incorrect = 0
+  # Pick each data point as testing set and perform PCA on the rest
+  for(i in 1:nrow(gem)){
+    # Test data point (test set)
+    test = gem[i,]
+    # True class for test data point
+    class_i = class[i]
+    # Perform PCA on the rest data (train set)
+    train_PCA = prcomp(gem[-i,])
+    # Extract the components from PCA
+    train_PCA_components = train_PCA$x
+    # When K = 1, the object is not a matrix, force it XD
+    if(K == 1){
+      tmp.qda = qda(matrix(train_PCA_components[,1:K]), grouping = class[-i])
+    } else{
+      tmp.qda = qda(train_PCA_components[,1:K], grouping = class[-i])
+    }
+    # Project the test set into PCA space calcualted on the train set
+    test_PCA_components = predict(train_PCA,test)
+    # Prediction on the test set
+    test_pred = predict(tmp.qda, test_PCA_components[1:K])$class
+    # If the prediction on test set is incorrect
+    if(class_i != test_pred){
+      # Increment the correct counter
+      running_incorrect = running_incorrect + 1
+    }
+  }
+  # Compute the classifcation error rate and append it to the vector
+  CE_2 = c(CE_2, running_incorrect/nrow(gem))
+  # Print the progress
+  print(sprintf('Experiment with K = %i is done...',K))
+}
+# End time
+end = Sys.time()
+# Run time
+print(end-start)
+```
+
+```{r, fig.align='center'}
+# Plot
+matplot(x = seq(1,18), y = cbind(CE_1,CE_2), xaxt = 'n',
+        pch = c(1,4), col = c('orange','blue'), cex = 0.8,
+        xlab = 'K (# of PCA Components)', ylab = 'Classification Error Rate',
+        main = 'LOOCV Result for Methods 1 and Method 2')
+# Add ticks to x-axis
+axis(side = 1, at = seq(1,18), cex.axis = 0.8)
+# Add legend
+legend('topleft',
+        legend = c('Method 1','Method 2'),
+        col = c('orange','blue'),
+        pch = c(1,4),
+        cex = 0.8)
+```
+
+**Answer**:
+
+- **How do the methods compare?**
+
+  Because the PCA components used to train the QDA model in Method 1 have already taken the test set into consideration, in general, Method 1 yields higher classfication rate than Method 2
+
+- **What would be the recommended number of principal components $K$?**
+
+  Based on the graph above, the first $13$ principal components seems to be a good number to use based on the experiment result from both methods.
+
+# Question 2
+
+## (a)
+```{r}
+pp = new("Partition", c(1,1,2,2))
+qq = new("Partition", c(1,1,2,3))
+mutualInformation(pp,qq)
+```
+
+## (b)
+```{r}
+# Extract the feature set
+iris_feature = iris[,-5]
+# Hierarchical cluster
+fit.hclust = hclust(dist(as.matrix(iris_feature)), method = 'average')
+```
+
+## (c)
+
+```{r}
+# Calculate the distance between two clusters
+average_distance = function(cluster_1_index, cluster_2_index, distance_matrix){
+  # cluster_1_index: the index of data point that belongs to cluster 1
+  # cluster_2_index: the index of data point that belongs to cluster 2
+  # distance_matrix: the original distance matrix (calculated in Euclidean distance) for Hierarchical clustering
+  
+  # Total number of pairs of data points between two clusters
+  total_pairs = length(cluster_1_index)*length(cluster_2_index)
+  # Initialize a variable to store the total distance: 
+  #     sum of distances for each pairs of data points
+  total_distance = 0
+  
+  # Loop through every pair of data points
+  for (i in cluster_1_index){
+    for (j in cluster_2_index){
+      # Add the distance between this pair of data to the total_distance
+      total_distance = total_distance + distance_matrix[i,j]
+    }
+  }
+  
+  # Return the average distance between two clusters
+  return(total_distance/total_pairs)
+}
+```
+
+```{r}
+# The distance matrix
+d_matrix = as.matrix(dist(as.matrix(iris_feature)))
+# Different number of clusters
+for(cluster in 2:10){
+  # Create variable on the fly (e.g. distance_1)
+  # Initialize the distance matrix
+  assign(paste('distance_',cluster,sep=''), matrix(rep(NA,cluster^2), nrow = cluster))
+  # Create a temporary deep copy of the distance matrix
+  tmp_matrix = get(paste('distance_',cluster,sep=''))
+  # Perform hierarchical clustering with k = cluster
+  tmp_cluster = cutree(fit.hclust, k = cluster)
+  # Compute the distance between each cluster
+  for(i in 1:(cluster-1)){
+    for(j in i+1:cluster){
+      # Prevent j from going out of scope
+      if(j <= cluster){
+        # Distance between cluster and itself should not be calculated
+        if(i != j){
+        # Extract the index of data points belongs to the ith cluster
+        cluster_i_index = which(tmp_cluster == i)
+        # Extract the index of data points belongs to the jth cluster
+        cluster_j_index = which(tmp_cluster == j)
+        # Compute the average distance between ith cluster and jth cluster
+        tmp_average_distance = average_distance(cluster_i_index,cluster_j_index, d_matrix)
+        # Add the computed distance to the distance matrix
+        tmp_matrix[i,j] = tmp_average_distance
+        tmp_matrix[j,i] = tmp_average_distance
+        # Overwrite the original distance matrix with the calculated temporary matrix
+        assign(paste('distance_',cluster,sep=''), tmp_matrix)
+        }
+      }
+    }
+  }
+}
+```
+
+```{r}
+# Initialize a vector to store the smallest cluster distance for each K
+min_dist_list = c()
+# Determine the smallest cluster distance for each K
+for(k in 2:10){
+  # Extract the smallest cluster distance for current K
+  min_dist = min(get(paste('distance_',k,sep='')), na.rm = TRUE)
+  # Append it to the vector
+  min_dist_list = c(min_dist_list, min_dist)
+  # Print
+  print(sprintf('Smallest cluster distance when K = %i: %f',k,min_dist))
+}
+```
+
+## (d)
+```{r}
+# Calcualte the cluster similarity between two clustering
+cluster_similarity = function(Q,R){
+  require(partitionComparison)
+  # Create partition objects
+  qq = new('Partition', Q)
+  rr = new('Partition', R)
+  # Calculate entropy for both partition
+  entropy_Q = mutualInformation(qq,qq)
+  entropy_R = mutualInformation(rr,rr)
+  # Calculate mutual information between two partition
+  MI = mutualInformation(qq,rr)
+  # Calculate the cluster similarity
+  similarity = MI/max(entropy_Q, entropy_R)
+  
+  return(similarity)
+}
+```
+
+```{r}
+# Initialize a vector to store the smallest cluster distance for each K
+cluster_similarity_list = c()
+# Different number of clusters
+for(cluster in 2:10){
+  # Perform hierarchical clustering with k = cluster
+  tmp_cluster = cutree(fit.hclust, k = cluster)
+  # Compute the cluster similarity between current clustering result and ground truth
+  similarity = cluster_similarity(tmp_cluster, as.numeric(iris$Species))
+  # Append it to the vector
+  cluster_similarity_list = c(cluster_similarity_list, similarity)
+}
+```
+
+## (e)
+
+```{r, fig.align='center'}
+# Set 1x2 graph grid
+par(mfrow=c(1,2))
+# Plot minnimum cluster distance vs. K
+plot(x = seq(2,10), y = min_dist_list, pch = 1, col = 'coral', cex = 0.8, cex.main = 0.7,
+     xaxt = 'n', xlab = 'K', ylab = 'Distance', 
+     main = 'Minimum Cluster Distance for each K')
+# Add ticks to x-axis
+axis(side = 1, at = seq(2,10), cex.axis = 0.8)
+# Plot cluster similarity vs. K
+plot(x = seq(2,10), y = cluster_similarity_list, pch = 3, col = 'blue', cex = 0.8,
+     cex.main = 0.7, xaxt = 'n', xlab = 'K', ylab = 'Similarity', 
+     main = 'Cluster Similarity with Ground Truth for each K')
+# Add ticks to x-axis
+axis(side = 1, at = seq(2,10), cex.axis = 0.8)
+```
+
+```{r}
+# K = 3
+hclust_3 = cutree(fit.hclust, k = 3)
+# Accuracy
+acc = sum(hclust_3 == as.numeric(iris$Species))/nrow(iris) * 100
+acc
+```
+
+**Answer**:
+
+If we pick the number of clusters based on the smallest cluster distance, we may pick either $2$ or $3$, which is really close to the ground truth.
+
+If we calculate the accuracy of clustering when $K = 3$, we may find out the hierarchical clustering did really good with $accuracy = $ `r acc`
+
+AMAZING! 🤟
+
+
+# Question 3
+
+```{r}
+# Extract 2-10 columns from UScereal and perform transformation log_10(x+1)
+log_UScereal = log(UScereal[,2:10]+1, base = 10)
+# Drop the 8th column (orignal 9th column)
+log_UScereal = log_UScereal[,-8]
+```
+
+## (a)
+```{r}
+# Initialize empty vector to store SSW for each value of K
+SSW = c()
+# Fit kmeans model with different number of clusters
+for(K in seq(1,15)){
+  # Set seed
+  set.seed(my_seed)
+  # Perform kmeans on the data with K clusters
+  fit.kmeans = kmeans(log_UScereal, centers = K, nstart = 100)
+  # Append the SSW value of current kmeans model to the vector
+  SSW = c(SSW, fit.kmeans$tot.withinss)
+}
+# Obtain the SST 
+# Note: (The SST is the same across all models since the training dataset remains the same)
+SST = fit.kmeans$totss
+# Calculate the r-squared
+r_squared = 1 - (SSW/SST)
+```
+
+```{r, fig.align='center', fig.width=7}
+# Set 1x2 graph grid
+par(mfrow=c(1,2))
+# Plot SSW vs. K
+plot(x = seq(1,15), y = SSW, pch = 1, col = 'coral', cex = 0.8, xaxt = 'n',
+     xlab = 'K', ylab = TeX('SS_{within}'), main = TeX('SS_{within} vs. K'))
+# Add ticks to x-axis
+axis(side = 1, at = seq(1,15), cex.axis = 0.8)
+# Plot r-squared vs. K
+plot(x = seq(1,15), y = r_squared, pch = 3, col = 'blue', cex = 0.8, xaxt = 'n',
+     xlab = 'K', ylab = TeX('R^2'), main = TeX('R^2 vs. K'))
+# Add ticks to x-axis
+axis(side = 1, at = seq(1,15), cex.axis = 0.8)
+```
+
+**Answer**:
+
+As shown in the graphs above, both $SS_{within}$ and $R^2$ seem to converge after $K=12$. Specifically, when $K=12$, $R^2 =$ `r r_squared[12]`. 
+
+Because the kmeans model already captures the majority of the variations in the dataset with $12$ clusters. There is no need to add more complexity to the model that may leads to overfitting.
+
+Therefore, $12$ is a good estimate of the number of actual clusters.
+
+## (b)
+```{r}
+# Obtain the change in r-squared as K changes
+r_squared.changes = (r_squared[-1] - r_squared[-15])
+# Return the index of the first change that is smaller than 0.1
+which(r_squared.changes < 0.1)[1]
+```
+
+```{r}
+# Set seed
+set.seed(my_seed)
+# Perform kmeans on the data with 3 clusters
+fit.kmeans = kmeans(log_UScereal, centers = 3, nstart = 100)
+```
+
+```{r}
+# Brand names in cluster #1
+names(fit.kmeans$cluster)[fit.kmeans$cluster == 1]
+```
+
+```{r}
+# Brand names in cluster #2
+names(fit.kmeans$cluster)[fit.kmeans$cluster == 2]
+```
+
+```{r}
+# Brand names in cluster #3
+names(fit.kmeans$cluster)[fit.kmeans$cluster == 3]
+```
+
+```{r, fig.align='center'}
+# Barplot
+barplot(fit.kmeans$centers, beside = T, col = c('coral','blue2','aquamarine3'), 
+        names.arg = colnames(log_UScereal), cex.names = 0.8, main = 'Nutritions by Cluster')
+# Add legend
+legend(x = 23, y = 2.5, c('Cluster #1','Cluster #2','Cluster #3'), pch=15, cex = 0.7, 
+       col = c('coral','blue2','aquamarine3'), bty="n")
+```
+
+**Answer**:
+
+- Cereal brands in `cluster #3` contain zero **fat** and zero **sodium**
+- Cereal brands in `cluster #1` and `cluster #2` have similar nutritions except that
+  - Cereal brands in `cluster #2` have higher **fibre** and **potassium** than brands in `cluster #1`
+
+# Question 4
+
+# Question 4
+
+## (a)
+As shown in the problem, we know 
+
+$MI(A,B) = H(P_A) + H(P_B) - H(P_{AB})$
+
+$H(P_{AB}) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b p_{ij}, H(P_A) = - \sum_{i=1}^n \alpha_i log_b\alpha_i, H(P_B) = - \sum_{j=1}^m \beta_i log_b\beta_i$ 
+
+where $\alpha_i = \sum_{j=1}^m p_{ij}$ and $\beta_j = \sum_{i=1}^n p_{ij}$
+<br>
+
+Hence, we can derive that 
+
+<center>
+$H(P_A) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \alpha_i,\ H(P_B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \beta_j$
+</center>
+<br>
+
+Therefore, we can represent $MI(A,B)$ as 
+
+<center>
+$MI(A,B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\alpha_i \beta_j}{p_{ij}}$
+</center>
+
+## (b)
+
+Define $g(I,J) = \frac{\alpha_i \beta_j}{p_{ij}}$, for each pair of $i,j$
+
+$P(-log_b(g(I,J)) = p_{ij})$
+
+Then the we can now write $MI(A,B) = E[-log_b(g(I,J))]$
+
+For every $(i_1,j_1)$ and $(i_2,j_2)$ where $i_1 \ne i_2, j_1 \ne j_2$ and $0 \le b \le 1$, we have
+
+<center>
+$b(-log_b g(i_1,j_1)) + (1-b)(-log_b g(i_2, j_2)) \ge -log_b[\ b \cdot g(i_1, j_2) + (1-b) \cdot g(i_2,j_2)\ ]$ 
+</center>
+
+Therefore, we can conclude that $-log_b(g(I,J))$ is a convex function
+
+Which means that we now have $MI(A,B) \ge -log_b E[g(I,J)]$. 
+
+Because $E[g(I,J)] = \sum_{i=1}^n \sum_{j=1}^m p_{ij} \frac{\alpha_i \beta_j}{p_{ij}} = 1$, so we can easily notice that $MI(A,B) \ge 0$
+
+## (c)
+
+Since we already know $H(P_A) = - \sum_{i=1}^n p_{ij} log_b\alpha_i, H(P_{AB}) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b p_{ij}$ from part(a), we can have
+
+$H(P_A) - H(P_{AB}) = -\sum_{i=1}^n p_{ij} log_b\alpha_i + \sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b p_{ij} = - \sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\alpha_i}{p_{ij}}$
+
+$\because \alpha_i = \sum_{j=1}^m p_{ij}\ \therefore \frac{\alpha_i}{p_{ij}} \ge 1$
+
+$\therefore H(P_A) - H(P_{AB}) = - \sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\alpha_i}{p_{ij}} \le 0$
+
+Similarly, $H(P_B) - H(P_{AB}) = - \sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\beta_i}{p_{ij}} \le 0$
+
+Then we can notice that 
+
+$MI(A,B) = H(P_A) + H(P_B) - H(P_{AB}) \le H(P_A)$
+
+Similarly,
+
+$MI(A,B) = H(P_A) + H(P_B) - H(P_{AB}) \le H(P_B)$
+
+We can now denote $MI(A,B)$ as $MI(A,B) \le \min\{H(P_A), H(P_B)\}$
+
+## (d)
+
+The independent random selections from $A$ and $B$ implies that $p_{ij} = \alpha_i \beta_j$, so we can verify that the lower bound of $MI(A,B)$ can be attained
+
+<center>
+$MI(A,B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b 1$
+</center>
+
+## (e)
+
+- Condition (i) tells us that for any row $i$ in Table 1, only one one entry meets the condition $p_{ij} = \alpha_i$, while all other $p_{ij}$ are zeros
+
+  Therefore, we now have $MI(A,B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\alpha_i \beta_j}{p_{ij}} = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \beta_j = -\sum_{j=1}^m \beta_j log_b \beta_j = H(P_B)$
+
+  $\therefore H(P_B) \le H(P_a)$
+
+- Condition (ii) tells us that for each column $j$ in Table 1, only one entry meets the condition $p_{ij} = \beta_j$, while all other $p_{ij}$ are zeros
+
+  Therefore, we now have $MI(A,B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \frac{\alpha_i \beta_j}{p_{ij}} = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b \alpha_i = -\sum_{i=1}^n \alpha_i log_b \beta_j = H(P_A)$
+
+  $\therefore H(P_A) \le H(P_B)$
+  
+To summarize, under condition (i) and (ii), we can obtain the upper bound of $MI(A,B)$
+
+## (f)
+
