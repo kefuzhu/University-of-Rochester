@@ -96,7 +96,7 @@ wilcox.test(pred_correct_posterior, pred_wrong_posterior)
   
 - **Wilcoxon rank sum test**
 
-  Because p-value from the test is `r wilcox.test(pred_correct_posterior, pred_wrong_posterior)$p.value`, which is smaller than $0.05$, we conclude that there is a statistically significant difference in the distribution of $p_max$ between observations that were correctly classified and those that weren't.
+  Because p-value from the test is `r wilcox.test(pred_correct_posterior, pred_wrong_posterior)$p.value`, which is smaller than $0.05$, we conclude that there is a statistically significant difference in the distribution of $p_{max}$ between observations that were correctly classified and those that weren't.
   
 ### (iii)
 ```{r, fig.align='center'}
@@ -380,7 +380,7 @@ acc
 
 If we pick the number of clusters based on the smallest cluster distance, we may pick either $2$ or $3$, which is really close to the ground truth.
 
-If we calculate the accuracy of clustering when $K = 3$, we may find out the hierarchical clustering did really good with $accuracy = $ `r acc`
+If we calculate the accuracy of clustering when $K = 3$, we may find out the hierarchical clustering did really good with $accuracy =$ `r acc`
 
 AMAZING! 🤟
 
@@ -484,8 +484,6 @@ legend(x = 23, y = 2.5, c('Cluster #1','Cluster #2','Cluster #3'), pch=15, cex =
 
 # Question 4
 
-# Question 4
-
 ## (a)
 As shown in the problem, we know 
 
@@ -523,6 +521,7 @@ For every $(i_1,j_1)$ and $(i_2,j_2)$ where $i_1 \ne i_2, j_1 \ne j_2$ and $0 \l
 $b(-log_b g(i_1,j_1)) + (1-b)(-log_b g(i_2, j_2)) \ge -log_b[\ b \cdot g(i_1, j_2) + (1-b) \cdot g(i_2,j_2)\ ]$ 
 </center>
 
+<br>
 Therefore, we can conclude that $-log_b(g(I,J))$ is a convex function
 
 Which means that we now have $MI(A,B) \ge -log_b E[g(I,J)]$. 
@@ -555,7 +554,8 @@ We can now denote $MI(A,B)$ as $MI(A,B) \le \min\{H(P_A), H(P_B)\}$
 
 The independent random selections from $A$ and $B$ implies that $p_{ij} = \alpha_i \beta_j$, so we can verify that the lower bound of $MI(A,B)$ can be attained
 
-<center>
+<cbr>
+<enter>
 $MI(A,B) = -\sum_{i=1}^n \sum_{j=1}^m p_{ij} log_b 1$
 </center>
 
@@ -577,3 +577,10 @@ To summarize, under condition (i) and (ii), we can obtain the upper bound of $MI
 
 ## (f)
 
+Suppose we label the cluster in $Q$ with $\{1,2,...,M\}$ and $R$ with $\{1,2,...,N\}$ and we know $M < N$
+
+Since $R$ assigns a cluster to every data point, which satisfies the condition (i) in part(e): Each row of Table 1 has exactly one nonzero entry. So we can conclude $MI(A,B) = H(P_B)$
+
+Assume we use $\min\{H(P_A), H(P_B)\}$ as the normalization term in the denominator for computing the clustering similarity index, we would end up with $I(Q,R) = 1$. Since we already know $Q$ and $R$ are different, so $I(Q,R) = 1$ is definitely not a reasonable quantity to describe their similarity.
+
+However, if we use $\max\{H(P_A), H(P_B)\}$ as the normalization term, we will get $I(Q,R) < 1$, which better describes the situation.
