@@ -1,0 +1,546 @@
+---
+title: "DSC 465, Homework 5"
+author: "Kefu Zhu"
+date: "04/24/2019"
+output:
+  html_document:
+    highlight: tango
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r message=FALSE, warning=FALSE}
+# Load library
+library(MASS)
+library(knitr)
+library(splines)
+library(glmnet)
+library(latex2exp)
+library(wooldridge)
+library(meifly)
+# Seed number for this assignment
+my_seed = 007 # :o
+```
+
+# Question 1
+
+## (a)
+
+$g(x)$ is a piecewise regression with three knots $\xi_1, \xi_2$ and $\xi_3$. In our case, it is a combination of constant prediction and cubic spline regression. In order to have a continuous $g(x)$, `property (ii)`, we need to have three constraints, one for each knot
+
+<center>
+$\begin{cases}a_0 = a_1 + b_1 \xi_1 + c_1 \xi_1^2 + d_1 \xi_1^3 \\ \\ a_1 + b_1 \xi_2 + c_1 \xi_2^2 + d_1 \xi_2^3 = a_2 + b_2 \xi_2 + c_2 \xi_2^2 + d_2 \xi_2^3 \\ \\ a_2 + b_2 \xi_3 + c_2 \xi_3^2 + d_2 \xi_3^3 = a_3\end{cases}$
+</center>
+<br>
+
+Similarly, to fulfill the continuity of first derivative at each knot, `property (iii)`, we need the following three constraints
+
+<center>
+$\begin{cases}0 = b_1 + 2c_1 \xi_1 + 3d_1 \xi_1^2 \\ \\ b_1 + 2c_1 \xi_2 + 3d_1 \xi_2^2 = b_2 + 2c_2 \xi_2 + 3d_2 \xi_2^2 \\ \\ b_2 + 2c_2 \xi_3 + 3d_2 \xi_3^2 = 0\end{cases}$
+</center>
+<br>
+
+**Answer**: In total, we need $6$ linear constraints
+
+## (b)
+
+Since we have $10$ parameters to estimate and we already have $6$ constaints, only $10-6=4$ free parameters are required to define $g(x)$
+
+# Question 2
+```{r}
+# Transformation
+log.price = log(Cars93$Price)
+log.mpg = log(Cars93$MPG.city)
+```
+
+##(a)
+```{r}
+# Fitting models
+fit_1 = lm(log.mpg ~ log.price)
+fit_2 = lm(log.mpg ~ log.price + I(log.price^2))
+fit_3 = lm(log.mpg ~ I(log.price^(-1)))
+fit_4 = lm(log.mpg ~ I(log.price^(-2)))
+# Linear spline for model 5
+fit_5 = lm(log.mpg ~ bs(log.price,knots = c(2.5),degree=1))
+# Linear spline for model 6
+fit_6 = lm(log.mpg ~ bs(log.price,knots = c(2.5,3.0),degree=1))
+```
+
+```{r}
+# Extract number of degree of freedoms from lm object
+get_df = function(fit){
+  return(length(fit$coefficients))
+}
+# Comput SSE for lm object
+get_SSE = function(fit){
+  return(sum(fit$residuals^2))
+}
+# Compute AIC for lm object based on SSE
+AIC_SSE = function(fit){
+  sse = get_SSE(fit)
+  k = get_df(fit)
+  n = length(fit$residuals)
+  aic = n*log(sse/n) + 2*k
+  return(aic)
+}
+# Compute BIC for lm object based on SSE
+BIC_SSE = function(fit){
+  sse = get_SSE(fit)
+  k = get_df(fit)
+  n = length(fit$residuals)
+  bic = n*log(sse/n) + log(n)*k
+  return(bic)
+}
+```
+
+```{r}
+# Construct lists for SSE, AIC, BIC and df
+df_list = c(get_df(fit_1),get_df(fit_2),get_df(fit_3),
+            get_df(fit_4),get_df(fit_5),get_df(fit_6))
+SSE_list = c(get_SSE(fit_1),get_SSE(fit_2),get_SSE(fit_3),
+             get_SSE(fit_4),get_SSE(fit_5),get_SSE(fit_6))
+AIC_SSE_list = c(AIC_SSE(fit_1),AIC_SSE(fit_2),AIC_SSE(fit_3),
+                 AIC_SSE(fit_4),AIC_SSE(fit_5),AIC_SSE(fit_6))
+BIC_SSE_list = c(BIC_SSE(fit_1),BIC_SSE(fit_2),BIC_SSE(fit_3),
+                 BIC_SSE(fit_4),BIC_SSE(fit_5),BIC_SSE(fit_6))
+# Put all lists in a dataframe
+model_eval_sse = data.frame(
+  'model' = c('M1','M2','M3','M4','M5','M6'),
+  'df' = df_list,
+  'SSE' = SSE_list,
+  'AIC' = AIC_SSE_list,
+  'BIC' = BIC_SSE_list
+  )
+```
+
+```{r, fig.align='center'}
+# # Print the dataframe as table
+# knitr::kable(model_eval_sse)
+```
+
+## (b)
+```{r}
+# Compute AIC for lm object based on log likelihood
+AIC_LL = function(fit){
+  ll = logLik(fit)
+  k = get_df(fit)
+  n = length(fit$residuals)
+  aic = -2*ll + 2*k
+  return(aic)
+}
+# Compute BIC for lm object based on log likelihood
+BIC_LL = function(fit){
+  ll = logLik(fit)
+  k = get_df(fit)
+  n = length(fit$residuals)
+  bic = -2*ll + log(n)*k
+  return(bic)
+}
+```
+
+```{r}
+# Construct lists for AIC, BIC based on log likelihood
+AIC_LL_list = c(AIC_LL(fit_1),AIC_LL(fit_2),AIC_LL(fit_3),
+                AIC_LL(fit_4),AIC_LL(fit_5),AIC_LL(fit_6))
+BIC_LL_list = c(BIC_LL(fit_1),BIC_LL(fit_2),BIC_LL(fit_3),
+                BIC_LL(fit_4),BIC_LL(fit_5),BIC_LL(fit_6))
+# Put all lists in a dataframe
+model_eval_ll = data.frame(
+  'model' = c('M1','M2','M3','M4','M5','M6'),
+  'df' = df_list,
+  'SSE' = SSE_list,
+  'AIC' = AIC_LL_list,
+  'BIC' = BIC_LL_list
+  )
+```
+
+## (c)
+```{r}
+# Construct lists for AIC, BIC based on log likelihood
+AIC_list = c(AIC(fit_1),AIC(fit_2),AIC(fit_3),
+                AIC(fit_4),AIC(fit_5),AIC(fit_6))
+BIC_list = c(BIC(fit_1),BIC(fit_2),BIC(fit_3),
+                BIC(fit_4),BIC(fit_5),BIC(fit_6))
+# Put all lists in a dataframe
+model_eval = data.frame(
+  'model' = c('M1','M2','M3','M4','M5','M6'),
+  'df' = df_list,
+  'SSE' = SSE_list,
+  'AIC' = AIC_list,
+  'BIC' = BIC_list
+  )
+```
+
+## (d)
+```{r}
+# Standardize AIC and BIC scores for each method
+AIC_SSE_standardized = AIC_SSE_list - min(AIC_SSE_list)
+AIC_ll_standardized = AIC_LL_list - min(AIC_LL_list)
+AIC_standardized = AIC_list - min(AIC_list)
+
+BIC_SSE_standardized = BIC_SSE_list - min(BIC_SSE_list)
+BIC_ll_standardized = BIC_LL_list - min(BIC_LL_list)
+BIC_standardized = BIC_list - min(BIC_list)
+```
+
+```{r}
+# Compared standardized AIC scores from different calculation methods
+data.frame(
+  'AIC_SSE_standardized' = AIC_SSE_standardized, 
+  'AIC_ll_standardized' = AIC_ll_standardized,
+  'AIC_standardized' = AIC_standardized
+)
+```
+
+```{r}
+# Compared standardized BIC scores from different calculation methods
+data.frame(
+  'BIC_SSE_standardized' = BIC_SSE_standardized, 
+  'BIC_ll_standardized' = BIC_ll_standardized,
+  'BIC_standardized' = BIC_standardized
+)
+```
+
+**Answer**: 
+
+Based on the comparison results above, we can conclude that the three model selection procedures are equivalent.
+
+## (e)
+```{r, fig.align='center', fig.height=9, fig.width=7}
+# Set up graph grid
+par(mfrow=c(3,2))
+# x-grid for prediction
+xgrid = seq(min(log.price),max(log.price),0.05)
+# Plot for M1
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_1, data.frame(log.price = xgrid)))
+title(paste('M1 AIC*=', 
+            round(AIC_standardized[1],2),
+            ' BIC*=',
+            round(BIC_standardized[1],2)))
+# Plot for M2
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_2, data.frame(log.price = xgrid)))
+title(paste('M2 AIC*=', 
+            round(AIC_standardized[2],2),
+            ' BIC*=',
+            round(BIC_standardized[2],2)))
+# Plot for M3
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_3, data.frame(log.price = xgrid)))
+title(paste('M3 AIC*=', 
+            round(AIC_standardized[3],2),
+            ' BIC*=',
+            round(BIC_standardized[3],2)))
+# Plot for M4
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_4, data.frame(log.price = xgrid)))
+title(paste('M4 AIC*=', 
+            round(AIC_standardized[4],2),
+            ' BIC*=',
+            round(BIC_standardized[4],2)))
+# Plot for M5
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_5, newdata = list(log.price = xgrid)))
+title(paste('M5 AIC*=', 
+            round(AIC_standardized[5],2),
+            ' BIC*=',
+            round(BIC_standardized[5],2)))
+# Plot for M6
+plot(log.price, log.mpg)
+lines(xgrid, predict(fit_6, newdata = list(log.price = xgrid)))
+title(paste('M6 AIC*=', 
+            round(AIC_standardized[6],2),
+            ' BIC*=',
+            round(BIC_standardized[6],2)))
+```
+
+## (f)
+
+**Answer**:
+
+- **Identify the models with the optimal AIC and BIC scores**:
+
+  `Model 4` has the best AIC and BIC scores in general
+  
+- **Suppose this model selection application is to be based on the AIC score. Examining the plots, is there a distinct reason why the models with the second or third lowest AIC might be used in place of the optimal AIC model?**
+
+  Because we can clearly see the tail of `Model 2` is dragged away by the data point with largest value of `log.price`, so compared to `Model 2`, the optimal AIC model, `Model 4` and `Model 6` are more robust. 
+  
+  `Model 4` is still the best among these three because it has descent model performance in terms of both AIC and BIC score, as well as low model complexity.
+
+# Question 3
+
+## (a)
+```{r}
+### Select variables by column index
+vari = c(1,4,5,7,9,15,20,21)
+### Use log-transform for response variable
+y = log10(lawsch85$salary)
+### Feature matrix
+x = as.matrix(lawsch85[,vari])
+### Create data frame and remove missing values
+yx = data.frame(y,x)
+yx = na.omit(yx)
+### Extract separate response and feature matrix
+x = as.matrix(yx[,-1])
+```
+
+### Fit second-order polynomial regression for each predictor
+```{r}
+# Fit all 8 models
+fit.rank = lm(y ~ poly(rank,2), data = yx)
+fit.LSAT = lm(y ~ poly(LSAT,2), data = yx)
+fit.GPA = lm(y ~ poly(GPA,2), data = yx)
+fit.faculty = lm(y ~ poly(faculty,2), data = yx)
+fit.clsize = lm(y ~ poly(clsize,2), data = yx)
+fit.studfac = lm(y ~ poly(studfac,2), data = yx)
+fit.llibvol = lm(y ~ poly(llibvol,2), data = yx)
+fit.lcost = lm(y ~ poly(lcost,2), data = yx)
+```
+
+```{r}
+# Extract r-square value from all models and put them in one vector
+r.squared_list = c(summary(fit.rank)$r.squared,
+                   summary(fit.LSAT)$r.squared,
+                   summary(fit.GPA)$r.squared,
+                   summary(fit.faculty)$r.squared,
+                   summary(fit.clsize)$r.squared,
+                   summary(fit.studfac)$r.squared,
+                   summary(fit.llibvol)$r.squared,
+                   summary(fit.lcost)$r.squared)
+# Add names
+names(r.squared_list) = names(yx)[-1]
+# Show it
+r.squared_list
+```
+
+**Answer**
+
+`rank` appears to be most informative of salary in the context of second-order polynomial regression model
+
+### Fit all 8 predictors in one model
+```{r, fig.align='center'}
+# Fit the model
+fit = lm(y ~ ., data = yx)
+# Plot residuals vs. fitted values
+plot(fit$fitted.values, fit$residuals)
+```
+
+**Answer**:
+
+The shape of curvature on the graph indicates an non-linear relationship between response variable and the predictors. So it is not suitable for us to use a linear model.
+
+## (b)
+```{r}
+# Construct the new feature matrix
+X_prime = cbind(poly(yx$rank,2),poly(yx$LSAT,2),
+                poly(yx$GPA,2),poly(yx$faculty,2),
+                poly(yx$clsize,2),poly(yx$studfac,2),
+                poly(yx$llibvol,2),poly(yx$lcost,2))
+colnames(X_prime) = c('rank','rank^2','LSAT','LSAT^2','GPA','GPA^2',
+                   'faculty','faculty^2','clsize','clsize^2',
+                   'studfac','studfac^2','llibvol','llibvol^2',
+                   'lcost','lcost^2')
+# Compute the variance within each column
+apply(X_prime, 2, var) # 2 means compute the variance by column
+```
+
+**Note**: The column variances are basically same. 
+
+But they are not exactly the same. If we execute the following code. We will see $5$ different values of variance. But the difference is negligible. (We actually cannot even see the difference in the default decimal setting)
+
+```{r}
+# Check if all variances are equal
+unique(apply(X_prime, 2, var))
+```
+
+```{r, fig.align='center'}
+# Create new dataframe
+yx_prime = as.data.frame(cbind(yx$y, X_prime))
+# Add column name for response variable
+colnames(yx_prime)[1] = 'y'
+# Fit the model
+fit_poly = lm(y ~ ., data = yx_prime)
+# Plot residuals vs. fitted values
+plot(fit_poly$fitted.values, fit_poly$residuals)
+```
+
+**Answer**:
+
+Compared to the plot in Part (a), this plot does not have any noticeable special pattern, which is a good indication of not having any non-linear relationships between response variable and predictors.
+
+## (c)
+```{r}
+# Set seed for Cross Validation
+set.seed(my_seed)
+# Fit Lasso with default 10-fold Cross-Validation
+fit_lasso = cv.glmnet(x = X_prime, y = yx$y, alpha = 1)
+fit_lasso_lambda1se = glmnet(
+  x = X_prime,
+  y = yx$y,
+  alpha = 1,
+  lambda = fit_lasso$lambda.1se
+  )
+```
+
+```{r}
+# Variables included in the 1se solution
+names(fit_lasso_lambda1se$beta[,1])[fit_lasso_lambda1se$beta[,1] != 0]
+```
+
+
+**Answer**:
+
+Only `rank`, `rank^2`, `LSAT`, `GPA` and `llibvol` are included in the solution with $\lambda =$  `r fit_lasso$lambda.1se` (`lambda.1e`)
+
+## (d)
+```{r}
+# Set seed for Cross Validation
+set.seed(my_seed)
+# Fit Ridge with default 10-fold Cross-Validation
+fit_ridge = cv.glmnet(x = X_prime, y = yx$y, alpha = 0)
+# Fit the Ridge with lambda = lambda.1se
+fit_ridge_lambda1se = glmnet(
+  x = X_prime,
+  y = yx$y,
+  alpha = 0,
+  lambda = fit_ridge$lambda.1se
+  )
+```
+
+```{r}
+# Rank the features for ridge model
+rank(coef(fit_ridge_lambda1se)[,1])
+```
+
+```{r}
+# Rank the features for lasso model
+rank(coef(fit_lasso_lambda1se)[,1])
+```
+
+## (e)
+
+### Computation Time
+```{r}
+# Forward selection based on AIC
+forward_AIC = stepAIC(fit_poly, direction = 'forward', trace = FALSE)
+system.time(stepAIC(fit_poly, direction = 'forward', trace = FALSE))
+```
+
+```{r}
+# Backward selection based on AIC
+backward_AIC = stepAIC(fit_poly, direction = 'backward', trace = FALSE)
+system.time(stepAIC(fit_poly, direction = 'backward', trace = FALSE))
+```
+
+```{r message=FALSE, warning=FALSE, results = 'hide'}
+# Perform the all-subset model selection
+all_subset = fitall(yx_prime$y, yx_prime[,-1])
+all_subset_runtime = system.time(fitall(yx_prime$y, yx_prime[,-1]))
+```
+
+```{r}
+# Show the runtime of all-subset model selection
+all_subset_runtime
+```
+
+
+```{r}
+# Extract AIC for all models in all-subset selection
+all_subset_AIC = t(sapply(all_subset, extractAIC))
+# Extract the best AIC model from all-subset selection
+best_all_subset = all_subset[order(all_subset_AIC[,2])[1]][[1]]
+# Remove 2^16 (65535) fitted models
+rm(all_subset)
+# Free memory
+gc()
+```
+
+```{r}
+# library(leaps)
+# # Perform all_subset model selection
+# all_subset = regsubsets(y~., data = yx_prime, nbest = 1, nvmax = NULL)
+# # Obtain the summary result from all-subset
+# all_subset_summary = summary(all_subset)
+# # Find the index of best model (index = # of predictors)
+# best_index = which(all_subset_summary$bic == min(all_subset_summary$bic))
+# # Show predictors from the best model through all-subset selection
+# all.subset_features = names(all_subset_summary$which[1,])[all_subset_summary$which[best_index,]]
+```
+
+### Features Comparison
+
+```{r}
+# Show the predictors from the 1se LASSO
+lasso_features = names(fit_lasso_lambda1se$beta[,1])[fit_lasso_lambda1se$beta[,1]!=0]
+lasso_features
+```
+
+
+```{r}
+# Show the predictors from the best model through forward selection
+forward_features = names(forward_AIC$coefficients)
+forward_features
+```
+
+```{r}
+# Show the predictors from the best model through backward selection
+backward_features = names(backward_AIC$coefficients)
+backward_features
+```
+
+```{r}
+# Show the predictors from the best model through all-subset selection
+all.subset_features = names(best_all_subset$coefficients)
+all.subset_features
+```
+
+```{r}
+# Predictors that are included in all fitted models
+Reduce(intersect,list(lasso_features,forward_features,backward_features,all.subset_features))
+```
+
+**Answer**:
+
+- **Computation Time**:
+
+  **Forward selection** has the smallest computation time, while **all-subset selection** takes the longest to compute. 
+
+- **Features**: 
+
+  Only `rank` and `LSAT` are included in all fitted models. The result is consistent with the analysis of $R^2$ from Part (a). `rank` has the highest $R^2$ value and `LSAT` has the second highest $R^2$ value.
+
+## (f)
+
+```{r, fig.align='center'}
+# Scatterplot of salary vs. rank
+plot(
+  yx$rank,
+  10 ^ (yx$y),
+  pch = 20,
+  cex = 0.8,
+  xlab = 'rank',
+  ylab = 'salary',
+  main = 'Salary vs. Rank'
+  )
+# Add LASSO 1se model
+points(yx$rank, 10^(predict(fit_lasso_lambda1se, newx = X_prime)), col = 'coral', pch = 1)
+# Add all-subsets model
+points(yx$rank, 10^(best_all_subset$fitted.values), col = 'blue2', pch = 4)
+# Add legend
+legend('topright',
+        legend = c('LASSO 1se','all-subsets model'),
+        col = c('coral','blue2'),
+        pch = c(1,4),
+        cex = 0.8)
+```
+
+**Answer**:
+
+Compared to the model from all-subsets selection, The `LASSO 1se` model seems to less overfit the data.
+
+
