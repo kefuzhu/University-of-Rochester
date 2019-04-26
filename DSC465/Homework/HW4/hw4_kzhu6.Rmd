@@ -577,9 +577,10 @@ To summarize, under condition (i) and (ii), we can obtain the upper bound of $MI
 
 ## (f)
 
-Suppose we label the cluster in $Q$ with $\{1,2,...,M\}$ and $R$ with $\{1,2,...,N\}$ and we know $M < N$
+Suppose we label the cluster in $Q$ with $\{1,2,...,M\}$ and $R$ with $\{1,2,...,N\}$ and we know $M < N$. In Table1, The row will indicate labels from cluster $Q$ and the column will indicate labels from cluster $R$.
 
-Since $R$ assigns a cluster to every data point, which satisfies the condition (i) in part(e): Each row of Table 1 has exactly one nonzero entry. So we can conclude $MI(A,B) = H(P_B)$
+
+Since $R$ assigns a cluster to every data point, which satisfies the condition (ii) in part(e): Each row of Table 1 has exactly one nonzero entry. So we can conclude $MI(A,B) = H(P_A)$
 
 Assume we use $\min\{H(P_A), H(P_B)\}$ as the normalization term in the denominator for computing the clustering similarity index, we would end up with $I(Q,R) = 1$. Since we already know $Q$ and $R$ are different, so $I(Q,R) = 1$ is definitely not a reasonable quantity to describe their similarity.
 

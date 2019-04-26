@@ -565,7 +565,7 @@ $(document).ready(function () {
 <a class="sourceLine" id="cb17-2" title="2">end =<span class="st"> </span><span class="kw">Sys.time</span>()</a>
 <a class="sourceLine" id="cb17-3" title="3"><span class="co"># Run time</span></a>
 <a class="sourceLine" id="cb17-4" title="4"><span class="kw">print</span>(end<span class="op">-</span>start)</a></code></pre></div>
-<pre><code>## Time difference of 2.697396 mins</code></pre>
+<pre><code>## Time difference of 2.6497 mins</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="co"># Plot</span></a>
 <a class="sourceLine" id="cb19-2" title="2"><span class="kw">matplot</span>(<span class="dt">x =</span> <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">18</span>), <span class="dt">y =</span> <span class="kw">cbind</span>(CE_<span class="dv">1</span>,CE_<span class="dv">2</span>), <span class="dt">xaxt =</span> <span class="st">&#39;n&#39;</span>,</a>
 <a class="sourceLine" id="cb19-3" title="3">        <span class="dt">pch =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">4</span>), <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&#39;orange&#39;</span>,<span class="st">&#39;blue&#39;</span>), <span class="dt">cex =</span> <span class="fl">0.8</span>,</a>
@@ -931,8 +931,8 @@ $(document).ready(function () {
 </div>
 <div id="f" class="section level2">
 <h2>(f)</h2>
-<p>Suppose we label the cluster in <span class="math inline">\(Q\)</span> with <span class="math inline">\(\{1,2,...,M\}\)</span> and <span class="math inline">\(R\)</span> with <span class="math inline">\(\{1,2,...,N\}\)</span> and we know <span class="math inline">\(M &lt; N\)</span></p>
-<p>Since <span class="math inline">\(R\)</span> assigns a cluster to every data point, which satisfies the condition (i) in part(e): Each row of Table 1 has exactly one nonzero entry. So we can conclude <span class="math inline">\(MI(A,B) = H(P_B)\)</span></p>
+<p>Suppose we label the cluster in <span class="math inline">\(Q\)</span> with <span class="math inline">\(\{1,2,...,M\}\)</span> and <span class="math inline">\(R\)</span> with <span class="math inline">\(\{1,2,...,N\}\)</span> and we know <span class="math inline">\(M &lt; N\)</span>. In Table1, The row will indicate labels from cluster <span class="math inline">\(Q\)</span> and the column will indicate labels from cluster <span class="math inline">\(R\)</span>.</p>
+<p>Since <span class="math inline">\(R\)</span> assigns a cluster to every data point, which satisfies the condition (ii) in part(e): Each row of Table 1 has exactly one nonzero entry. So we can conclude <span class="math inline">\(MI(A,B) = H(P_A)\)</span></p>
 <p>Assume we use <span class="math inline">\(\min\{H(P_A), H(P_B)\}\)</span> as the normalization term in the denominator for computing the clustering similarity index, we would end up with <span class="math inline">\(I(Q,R) = 1\)</span>. Since we already know <span class="math inline">\(Q\)</span> and <span class="math inline">\(R\)</span> are different, so <span class="math inline">\(I(Q,R) = 1\)</span> is definitely not a reasonable quantity to describe their similarity.</p>
 <p>However, if we use <span class="math inline">\(\max\{H(P_A), H(P_B)\}\)</span> as the normalization term, we will get <span class="math inline">\(I(Q,R) &lt; 1\)</span>, which better describes the situation.</p>
 </div>
