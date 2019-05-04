@@ -189,6 +189,7 @@ BIC_standardized = BIC_list - min(BIC_list)
 ```{r}
 # Compared standardized AIC scores from different calculation methods
 data.frame(
+  'model' = c('M1','M2','M3','M4','M5','M6'),
   'AIC_SSE_standardized' = AIC_SSE_standardized, 
   'AIC_ll_standardized' = AIC_ll_standardized,
   'AIC_standardized' = AIC_standardized
@@ -414,12 +415,12 @@ fit_ridge_lambda1se = glmnet(
 
 ```{r}
 # Rank the features for ridge model
-rank(coef(fit_ridge_lambda1se)[,1])
+rank(abs(coef(fit_ridge_lambda1se)[,1]))
 ```
 
 ```{r}
 # Rank the features for lasso model
-rank(coef(fit_lasso_lambda1se)[,1])
+rank(abs(coef(fit_lasso_lambda1se)[,1]))
 ```
 
 ## (e)
@@ -541,6 +542,48 @@ legend('topright',
 
 **Answer**:
 
-Compared to the model from all-subsets selection, The `LASSO 1se` model seems to less overfit the data.
+As we can see on the graph above, the fitted values of `LASSO 1se` is fairly consistent and do not seem to be affected too much by some noisy data points.
+
+However, the model from all-subsets selection do seem to accomodate the trainig data points a lot, even for some noisy data points.
+
+So in general, compared to the model from all-subsets selection, The `LASSO 1se` model seems to less overfit the data, which is an evidence of "shrinkage effect"
+
+For sanity check, we look at the magnitude of coefficients for both models (down below). The magnitudes of coefficients in `LASSO 1se` model is fairly small, except one dominant predictor, `rank`.
+
+```{r}
+# Coefficients of LASSO 1se
+fit_lasso_lambda1se$beta[,1][fit_lasso_lambda1se$beta[,1]!=0]
+```
+
+```{r}
+# Coefficients of model from all-subsets selection
+best_all_subset$coefficients
+```
 
 
+# Question 4
+
+The likelihood for gaussian multiple regression model can be written as
+
+$Likelihood = \prod \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{1}{2\sigma^2} (y_i -\beta x_i)^2} = (\frac{1}{2\pi\sigma^2})^{\frac{n}{2}} e^{-\frac{1}{2} (Y-\beta X)^T(\sigma^2)^{-1}(Y-\beta X)}$
+
+
+Then the log-likelihood of the model, $LL$, is
+
+<center>
+$ln(LL) = -\frac{n}{2} ln(2\pi\sigma^2) -\frac{1}{2} (Y-\beta X)^T(\sigma^2)^{-1}(Y-\beta X)$
+
+$-2 \cdot ln(LL) = nln(2\pi) + nln(\sigma^2) + \sum_{i=1}^n \frac{(y_i - \hat{y_i})^2}{\sigma^2}$
+</center>
+
+$\because$ The MLE of $\sigma^2$ is $SSE/n$, and $SSE = \sum_{i=1}^n (y_i - \hat{y_i})^2$
+
+$\therefore -2 \cdot ln(LL) = nln(2\pi) + nln(\frac{SSE}{n}) + \sum_{i=1}^n \frac{(y_i - \hat{y_i})^2}{SSE/n} = nln(2\pi) + nln(\frac{SSE}{n}) + n$
+
+Then the difference between $-2ln(LL)$ and $nln(\frac{SSE}{n})$ is
+
+<center>
+$nln(2\pi) + n$
+</center>
+
+which is a constant depends only on $n$
