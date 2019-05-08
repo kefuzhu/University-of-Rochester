@@ -124,7 +124,7 @@ where
 **Dynamic Programming (Recursion)::** $t = 2,3,...,T$
 
 $\alpha(t,i) = P(Z_t = i,X_{1:t})$ 
-
+2
 $= \sum_j P(Z_t = i,Z_{t-1} = j,X_{1:t})\ \ \ \ $ (Marginalization)
 
 $= \sum_j P(Z_t = i,Z_{t-1} = j,X_{1:t-1}, X_{t})$

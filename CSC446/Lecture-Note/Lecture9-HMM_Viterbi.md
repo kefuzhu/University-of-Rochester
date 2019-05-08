@@ -66,7 +66,7 @@ $\delta(t,i) = \max_{Z_{1:t-1}} P(Z_t = i, Z_{1:t-1}, X_{1:t})$
 
 $= \max_{Z_{1:t-1}} P(Z_t = i|Z_{t-1} = j)P(X_t|Z_t = i)P(Z_{t-1} = j,Z_{1:t-1}, X_{1:t-1})$
 
-$= \max_{Z_{t-1}} [P(Z_t = i|Z_{t-1} = j)P(X_t|Z_t = i) \max_{Z_{1:t-2}} P(Z_{t-1} = j,Z_{1:t-2}, X_{1:t-1})]$
+$= \max_{Z_{t-1}} [P(Z_t = i|Z_{t-1} = j)P(X_t|Z_t = i) \max_{Z_{1:t-2}} [P(Z_{t-1} = j,Z_{1:t-2}, X_{1:t-1})]]$
 
 $= \max_j [P(Z_t = i|Z_{t-1} = j) \cdot P(X_t|Z_t = i) \cdot \delta(t-1,j)]$
 
