@@ -1,4 +1,4 @@
-# DSC 475 Time Series
+# DSC 475 Time-Series Analysis and Forecasting for Data Science
 
 This is a repository for DSC 475 related course materials including lecture slides, homeworks and useful resources. 
 
