@@ -76,7 +76,7 @@ If we only speak of reliability, the clustering method might be more reliable si
 #### Summary Statistics
 
 <center>
-![](graphs/summary_statistics.png)
+<img src='graphs/summary_statistics.png'>
 </center>
 
 **Observation**: 
@@ -90,7 +90,7 @@ After a closer look, we do see two records with extremely large values compared 
 #### Correlation Heat Map
 
 <center>
-![](graphs/corr_heatmap.png)
+<img src='graphs/corr_heatmap.png'>
 </center>
 
 **Observation**:
