@@ -15,4 +15,13 @@
 	- Create lag variables in terms of time
 	- Contemporary weather information or lag weather forecasting
 	- Available road construction information beforehand
-- 
+
+## 4. VestEdu
+
+- Difference in customers
+	- **Lending Club (Training Data)**: A mix of loans
+	- **VestEdu**: Only provide service for limited majors and people with U.S. citizenship and Indian international students?
+- Time coverage: 2019 Q2
+- Have informtaion from the credit bureau
+- Individual investors bidding for the loans
+- **Requirement**: Prefer python and scipy package (for some reason)
