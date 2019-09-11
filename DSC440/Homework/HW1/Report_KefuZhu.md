@@ -73,7 +73,7 @@ If we only speak of reliability, the clustering method might be more reliable si
 
 **Data Source**: Forest Fires Data Set from the UCI Machine Learning Repository: [https://archive.ics.uci.edu/ml/datasets/Forest+Fires](https://archive.ics.uci.edu/ml/datasets/Forest+Fires)
 
-#### Summary Statistics
+#### 1. Summary Statistics
 
 <center>
 <img src='graphs/summary_statistics.png'>
@@ -83,11 +83,11 @@ If we only speak of reliability, the clustering method might be more reliable si
 
 If we look closely to the target variable, `area`, we can notice that the maximum value is way larger than the 75-percentile. It may indicate possible extreme value/outlier.
 
-Largest top 10 values for the `area` variable: `[105.66, 154.88, 174.63, 185.76, 196.48, 200.94, 212.88, 278.53, 746.28, 1090.84]`
+In fact, the largest top 10 values for the `area` variable are `[105.66, 154.88, 174.63, 185.76, 196.48, 200.94, 212.88, 278.53, 746.28, 1090.84]`
 
-After a closer look, we do see two records with extremely large values compared to others, `746.28` and `1090.84`. Hence, we exclude those two records in the following explorative data analysis. These records should be treated separately in any future potential modeling process.
+Upon a closer look, we do see two records with extremely large values compared to others, `746.28` and `1090.84`. Hence, we exclude those two records in the following explorative data analysis. These records should be treated separately in any future potential modeling process.
 
-#### Correlation Heat Map
+#### 2. Correlation Heat Map
 
 <center>
 <img src='graphs/corr_heatmap.png'>
@@ -99,7 +99,7 @@ After a closer look, we do see two records with extremely large values compared 
 2. `temp` and `RH (relative humidity)` has a negative correlation which is also align with our commen sense.
 3. Our main target, `area`, does not seem to have any directly clear correlation with any other variables in this dataset.
 
-#### Pairwise Plots
+#### 3. Pairwise Plots
 
 <center>
 <img src='graphs/pairwise_plots.png', width = 500%>
