@@ -25,3 +25,16 @@
 - Have informtaion from the credit bureau
 - Individual investors bidding for the loans
 - **Requirement**: Prefer python and scipy package (for some reason)
+
+## 5. Wegmans
+
+- Write script to automatically extract data from NOAA
+- Foods that are needed the most might not be the one with the largest sale in hisoricala data
+	- Chicken tender is already out of sale. Customers go after chiken nuggests and etc.
+- Use weather forecast to train the model but could use the actual event happen data to validate/evaluate the result
+- **Requirement**: Analysis part in R. API could be done in Python
+
+## 6. Paychex
+
+- They remove the information inherited in different groups, which may make the analysis difficult to reason
+- **Requirement**: Prefer R. Python can be discussed
