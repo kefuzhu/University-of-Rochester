@@ -298,7 +298,7 @@ output = '../data/NYC_2018_weather.csv'
 
 
 match_result = main(warning_data = warning_data, phenom = weather_list, startDate = start_date, endDate = end_date, show_progress = TRUE)
-
+match_result
 # Write result to output location
 writeLines(paste(c('Writing result to output location: ',output,' ...'), collapse = ''))
 write.csv(match_result, file = output, row.names = FALSE)
